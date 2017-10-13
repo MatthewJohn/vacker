@@ -47,8 +47,7 @@ class Importer(object):
             analysed_info['yms'] = '%s-%s-%s' % (analysed_info['datetime'].year,
                                                  analysed_info['datetime'].month,
                                                  analysed_info['datetime'].day)
-        #print 'importing %s' % photo
-        #print analysed_info
+
         photo_id = self.database.get_database().media.insert_one(analysed_info).inserted_id
         return vacker.media.photo.Photo(photo_id)
 
