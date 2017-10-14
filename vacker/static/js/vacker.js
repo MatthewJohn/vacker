@@ -1,4 +1,4 @@
-// (function() {
+(function() {
     var app = angular.module("vackerApp", []);
 
     var YearController = function($scope, $http) {
@@ -20,4 +20,4 @@
     };
 
     app.controller("YearController", YearController);
-// })
+})();
