@@ -34,25 +34,26 @@ class Analyser(object):
               PIL.ExifTags.TAGS[k]: v
               for k, v in pil_image._getexif().items()
               if k in PIL.ExifTags.TAGS
-            }
-            if 'Orientation' in exif_data:
-                image_info['orientation'] = exif_data['Orientation']
-            if 'GPSInfo' in exif_data:
-                for key in exif_data['GPSInfo'].keys():
-                    decode = PIL.ExifTags.GPSTAGS.get(key,key)
-                    gps_info[decode] = exif_data['GPSInfo'][key]
-                long_lat = self._convert_gps_to_lang_lat(gps_info)
-                if 'longitude' in long_lat and 'latitude' in long_lat:
-                    image_info['location'] = {'type': 'Point', 'coordinates': [ long_lat['longitude'], long_lat['latitude']]}
-            for datetime_tag in ['DateTime',
-                                 'DateTimeOriginal',
-                                 'DateTimeDigitized']:
-                if datetime_tag in exif_data:
-                    try:
-                        image_info['datetime'] = datetime.strptime(exif_data[datetime_tag], '%Y:%m:%d %H:%M:%S')
-                        break
-                    except:
-                        pass
+            } if pil_image._getexif() else None
+            if exif_data:
+                if 'Orientation' in exif_data:
+                    image_info['orientation'] = exif_data['Orientation']
+                if 'GPSInfo' in exif_data:
+                    for key in exif_data['GPSInfo'].keys():
+                        decode = PIL.ExifTags.GPSTAGS.get(key,key)
+                        gps_info[decode] = exif_data['GPSInfo'][key]
+                    long_lat = self._convert_gps_to_lang_lat(gps_info)
+                    if 'longitude' in long_lat and 'latitude' in long_lat:
+                        image_info['location'] = {'type': 'Point', 'coordinates': [ long_lat['longitude'], long_lat['latitude']]}
+                for datetime_tag in ['DateTime',
+                                     'DateTimeOriginal',
+                                     'DateTimeDigitized']:
+                    if datetime_tag in exif_data:
+                        try:
+                            image_info['datetime'] = datetime.strptime(exif_data[datetime_tag], '%Y:%m:%d %H:%M:%S')
+                            break
+                        except:
+                            pass
         image_info['width'], image_info['height'] = pil_image.size
         pil_image.close()
         return image_info
