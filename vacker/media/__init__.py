@@ -19,6 +19,14 @@ class Media(object):
         database_connection = vacker.database.Database.get_database()
         return database_connection.media.find_one({'_id': ObjectId(self.get_id())})['datetime']
 
+    def get_path(self):
+        database_connection = vacker.database.Database.get_database()
+        return database_connection.media.find_one({'_id': ObjectId(self.get_id())})['path']
+
+    def get_orientation(self):
+        database_connection = vacker.database.Database.get_database()
+        return database_connection.media.find_one({'_id': ObjectId(self.get_id())})['orientation'] 
+
     def update_sets(self):
         if not self.get_date():
             return
@@ -55,5 +63,8 @@ class Media(object):
         database_connection.media.update({'set_id': {'$in': events}},
                                          {'$set': {'event_id': event_id}}, multi=True)
 
+    def get_thumbnail(self):
+        database_connection = vacker.database.Database.get_database()
+        return database_connection.thumbnail.find({'_id': self.get_id()})[0]['thumbnail_data']
 
 

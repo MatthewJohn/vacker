@@ -29,6 +29,7 @@ class Importer(object):
             media_obj = self.import_photo(file)
             media_obj.update_sets()
             media_obj.update_events()
+            media_obj.create_thumbnail()
         elif file_type is vacker.analyser.MediaType.VIDEO:
             media_obj = self.import_video(file)
         return media_obj
@@ -42,11 +43,8 @@ class Importer(object):
         analysed_info['event_id'] = None
         if 'datetime' in analysed_info and analysed_info['datetime']:
             analysed_info['y'] = analysed_info['datetime'].year
-            analysed_info['ym'] = '%s-%s' % (analysed_info['datetime'].year,
-                                             analysed_info['datetime'].month)
-            analysed_info['yms'] = '%s-%s-%s' % (analysed_info['datetime'].year,
-                                                 analysed_info['datetime'].month,
-                                                 analysed_info['datetime'].day)
+            analysed_info['m'] = analysed_info['datetime'].month
+            analysed_info['d'] = analysed_info['datetime'].day
 
         photo_id = self.database.get_database().media.insert_one(analysed_info).inserted_id
         return vacker.media.photo.Photo(photo_id)

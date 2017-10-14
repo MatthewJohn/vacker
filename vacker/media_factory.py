@@ -31,10 +31,18 @@ class MediaFactory(object):
         return (analyser.get_checksum(file) == media_object.get_checksum())
 
     def get_years(self):
-        pass
+        db_connection = vacker.database.Database.get_database()
+        res = db_connection.media.aggregate([{'$group': {'_id': '$y'}}])
+        years = [item['_id'] for item in res if item['_id'] is not None]
+        years.sort()
+        return years
 
-    def get_months(self, start_date):
-        pass
+    def get_months(self, year):
+        db_connection = vacker.database.Database.get_database()
+        res = db_connection.media.aggregate([{'$match': {'y': year}}, {'$group': {'_id': '$m'}}])
+        months = [item['_id'] for item in res if item['_id'] is not None]
+        months.sort()
+        return months
 
     def get_days(self, start_date):
         pass
@@ -47,3 +55,22 @@ class MediaFactory(object):
 
     def get_sets_by_date(self, start_date, length=datetime.timedelta(hours=24)):
         pass
+
+    def get_media_by_set(self, set_id):
+        pass
+
+    def get_media_by_event(self, event_id):
+        pass
+
+    def get_media_by_date(self, start_date, length=datetime.timedelta(hours=24)):
+        pass
+
+    def get_thumbnail_by_date(self, start_date, length=datetime.timedelta(hours=24)):
+        db_connection = vacker.database.Database.get_database()
+        media = db_connection.media.aggregate([
+            {'$match': {'datetime': {'$gte': start_date, '$lt': (start_date + length)}}},
+            {'$sample': {'size': 1}}
+        ])
+        for media_itx in media:
+            return self.get_media_by_id(str(media_itx['_id']))
+        return None

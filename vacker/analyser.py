@@ -27,7 +27,7 @@ class Analyser(object):
 
     def get_image_data(self, path):
         pil_image = PIL.Image.open(path)
-        image_info = {'datetime': None}
+        image_info = {'datetime': None, 'orientation': None}
         gps_info = {}
         if hasattr(pil_image, '_getexif'):
             exif_data = {
@@ -35,6 +35,8 @@ class Analyser(object):
               for k, v in pil_image._getexif().items()
               if k in PIL.ExifTags.TAGS
             }
+            if 'Orientation' in exif_data:
+                image_info['orientation'] = exif_data['Orientation']
             if 'GPSInfo' in exif_data:
                 for key in exif_data['GPSInfo'].keys():
                     decode = PIL.ExifTags.GPSTAGS.get(key,key)
