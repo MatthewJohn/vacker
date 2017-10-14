@@ -5,4 +5,4 @@ sys.path.append('.')
 
 from vacker.server import app
 
-app.run(debug=True)
+app.run(debug=True, threaded=True)
