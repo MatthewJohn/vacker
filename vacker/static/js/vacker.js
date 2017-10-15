@@ -5,6 +5,11 @@
 
         $scope.selected_year = null;
         $scope.selected_month = null;
+        $scope.show_month_selecter = true;
+        $scope.show_day_selecter = true;
+        $scope.show_event_selecter = false;
+        $scope.show_set_selecter = false;
+        $scope.show_media_selecter = false;
         $scope.years = [];
         $scope.months = [];
         $scope.days = [];
@@ -39,18 +44,44 @@
         };
         var onMonthsComplete = function(response) {
             $scope.months = response.data;
+            $scope.show_day_selecter = false;
+            $scope.show_event_selecter = false;
+            $scope.show_set_selecter = false;
+            $scope.show_media_selecter = false;
         };
         var onDaysComplete = function(response) {
             $scope.days = response.data;
+            $scope.show_day_selecter = true;
+            $scope.show_event_selecter = false;
+            $scope.show_set_selecter = false;
+            $scope.show_media_selecter = false;
         };
         var onEventsComplete = function(response) {
-            $scope.events = response.data;
+            if (response.data.length == 1) {
+                $scope.select_event(response.data[0].id);
+                $scope.show_set_selecter = true;
+                $scope.show_event_selecter = false;
+            } else {
+                $scope.events = response.data;
+                $scope.show_event_selecter = true;
+                $scope.show_set_selecter = false;
+            }
+            $scope.show_media_selecter = false;
         };
         var onSetsComplete = function(response) {
-            $scope.sets = response.data;
+            if (response.data.length == 1) {
+                $scope.select_set(response.data[0]);
+                $scope.show_media_selecter = true;
+                $scope.show_set_selecter = false;
+            } else {
+                $scope.sets = response.data;
+                $scope.show_set_selecter = true;
+                $scope.show_media_selecter = false;
+            }
         };
         var onMediaComplete = function(response) {
             $scope.media = response.data;
+            $scope.show_media_selecter = true;
         };
         var onHttpError = function(reason) {
             alert("HTTP error: " + reason);
