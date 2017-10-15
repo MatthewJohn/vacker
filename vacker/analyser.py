@@ -13,8 +13,7 @@ class MediaType(object):
 class Analyser(object):
 
     def detect_media_type(self, path):
-        mime = MimeTypes()
-        object_mime_type = mime.guess_type(path)[0]
+        object_mime_type = MimeTypes().guess_type(path)[0]
         if object_mime_type is None:
             return MediaType.UNSUPPORTED
 
@@ -56,6 +55,7 @@ class Analyser(object):
                             pass
         image_info['width'], image_info['height'] = pil_image.size
         pil_image.close()
+        image_info['mime_type'] = MimeTypes().guess_type(path)[0]
         return image_info
 
     def _convert_to_degress(self, value):

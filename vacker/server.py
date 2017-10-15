@@ -9,6 +9,13 @@ import vacker.media_factory
 app = Flask(__name__)
 api = Api(app)
 
+@app.route('/photo/<string:media_id>/data')
+def get_photo_data(media_id):
+    media_factory = vacker.media_factory.MediaFactory()
+    media = media_factory.get_media_by_id(media_id)
+    response = Response(media.get_photo_data(), mimetype=media.get_mime_type())
+    return response
+
 @app.route('/thumbnail/<string:media_id>')
 def get_thumbnail(media_id):
     media_factory = vacker.media_factory.MediaFactory()
@@ -93,14 +100,21 @@ class GetSets(Resource):
         media_factory = vacker.media_factory.MediaFactory()
         return media_factory.get_sets_by_event(event_id)
 
-class GetMedia(Resource):
+class GetMediaBySet(Resource):
     def get(self, set_id):
         media_factory = vacker.media_factory.MediaFactory()
         return media_factory.get_media_by_set(set_id)
+
+class GetPhoto(Resource):
+    def get(self, media_id):
+        media_factory = vacker.media_factory.MediaFactory()
+        media = media_factory.get_media_by_id(media_id)
+        return {'orientation': media.get_orientation()}
 
 api.add_resource(GetYears, '/years')
 api.add_resource(GetMonths, '/years/<int:year>/months')
 api.add_resource(GetDays, '/years/<int:year>/months/<int:month>/days')
 api.add_resource(GetEvents, '/years/<int:year>/months/<int:month>/days/<int:day>/events')
 api.add_resource(GetSets, '/events/<string:event_id>/sets')
-api.add_resource(GetMedia, '/sets/<string:set_id>/media')
+api.add_resource(GetMediaBySet, '/sets/<string:set_id>/media')
+api.add_resource(GetPhoto, '/photo/<string:media_id>')

@@ -27,6 +27,10 @@ class Media(object):
         database_connection = vacker.database.Database.get_database()
         return database_connection.media.find_one({'_id': ObjectId(self.get_id())})['orientation'] 
 
+    def get_mime_type(self):
+        database_connection = vacker.database.Database.get_database()
+        return database_connection.media.find_one({'_id': ObjectId(self.get_id())})['mime_type'] 
+
     def update_sets(self):
         if not self.get_date():
             return

@@ -27,4 +27,7 @@ class Photo(Media):
         db = vacker.database.Database.get_database()
         db.thumbnail.insert_one({'_id': ObjectId(self.get_id()), 'thumbnail_data': Binary(contents)})
 
-
+    def get_photo_data(self):
+        with open(self.get_path(), 'rb') as rh:
+            data = rh.read()
+        return data

@@ -140,6 +140,22 @@
                 .then(onMediaComplete, onHttpError);
             $scope.selected_set = set_id;
         };
+
+        $scope.show_media_modal = function(media_id) {
+            $http.get('/photo/' + media_id)
+                .then(function(response) {
+                    var rotation = {
+                      1: '0deg',
+                      3: '180deg',
+                      6: '90deg',
+                      8: '270deg'
+                    };
+                    document.getElementById('modalImg').style['-webkit-transform'] = 'rotate(' + rotation[response.data.orientation] + ')';
+                    document.getElementById("modalImg").src = "/photo/" + media_id + '/data';
+                    document.getElementById('photoModal').style.display = "block";
+                }, onHttpError);
+            
+        }
     };
 
     app.controller("PhotoController", PhotoController);
