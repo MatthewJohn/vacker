@@ -5,6 +5,8 @@ import datetime
 import vacker.analyser
 import vacker.media_factory
 import vacker.database
+import vacker.config
+
 
 class Importer(object):
 
@@ -27,6 +29,8 @@ class Importer(object):
             return False
         if file_type is vacker.analyser.MediaType.PHOTO:
             media_obj = self.import_photo(file)
+            if not media_obj:
+                return False
             media_obj.update_sets()
             media_obj.update_events()
             media_obj.create_thumbnail()
@@ -36,6 +40,11 @@ class Importer(object):
 
     def import_photo(self, photo):
         analysed_info = self.analyser.get_image_data(photo)
+
+        # Check is image is smaller than minimum resolution
+        if (analysed_info['height'] * analysed_info['width']) < vacker.config.Config.get('MINIMUM_RESOLUTION'):
+            return None
+
         analysed_info['checksum'] = self.analyser.get_checksum(photo)
         analysed_info['path'] = photo
         analysed_info['mtime'] = datetime.datetime.fromtimestamp(os.stat(photo).st_mtime)
