@@ -57,11 +57,10 @@ class MediaFactory(object):
                                                                       '$lt': (start_date + length)}}},
                                              {'$group': {'_id': '$event_id'}}])
         event_details = []
-        for event_id in [item['_id'] for item in res]:
+        for event_id in [str(item['_id']) for item in res]:
             
-            event_details.append({'id': str(event_id),
-                                  'name': None,
-                                  'media_count': len(self.get_sets_by_event(str(event_id)))})
+            event_details.append({'id': event_id,
+                                  'set_count': len(self.get_sets_by_event(event_id))})
         return event_details
 
 
@@ -69,7 +68,11 @@ class MediaFactory(object):
         db_connection = vacker.database.Database.get_database()
         res = db_connection.media.aggregate([{'$match': {'event_id': ObjectId(event_id)}},
                                              {'$group': {'_id': '$set_id'}}])
-        return [str(set_obj['_id']) for set_obj in res]
+        set_details = []
+        for set_id in [str(set_obj['_id']) for set_obj in res]:
+            set_details.append({'id': set_id,
+                                'media_count': len(self.get_media_by_set(set_id))})
+        return set_details
 
     def get_sets_by_date(self, start_date, length=datetime.timedelta(hours=24)):
         pass

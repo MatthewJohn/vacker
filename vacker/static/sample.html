@@ -103,13 +103,13 @@
   <div class="selecter-row" id="event-selecter" ng-show="show_event_selecter">
     <div class="item" ng-click="select_event(event.id)" ng-repeat="event in events">
       <img class="item-img" src="http://bestanimations.com/Science/Gears/loadinggears/loading-gear.gif" ng-src="{{ get_thumbnail_url('events/' + event.id, event_random) }}">
-      <div class="item-title">{{ event.name }}<br />({{ event.media_count }} sets)</div>
+      <div class="item-title">{{ event.set_count }} sets</div>
     </div>
   </div>
   <div class="selecter-row" id="set-selecter" ng-show="show_set_selecter">
-    <div class="item" ng-click="select_set(set)" ng-repeat="set in sets">
-      <img class="item-img" src="http://bestanimations.com/Science/Gears/loadinggears/loading-gear.gif" ng-src="{{ get_thumbnail_url('sets/' + set, set_random) }}">
-      <div class="item-title"></div>
+    <div class="item" ng-click="select_set(set.id)" ng-repeat="set in sets">
+      <img class="item-img" src="http://bestanimations.com/Science/Gears/loadinggears/loading-gear.gif" ng-src="{{ get_thumbnail_url('sets/' + set.id, set_random) }}">
+      <div class="item-title">{{ set.media_count }} {{ set.media_count == 1 ? 'photo' : 'photos' }}<!-- Not Really photos, could be videos, once they are processed --></div>
     </div>
   </div>
   <div class="selecter-row" id="media-selecter" ng-show="show_media_selecter">

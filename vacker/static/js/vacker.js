@@ -70,7 +70,7 @@
         };
         var onSetsComplete = function(response) {
             if (response.data.length == 1) {
-                $scope.select_set(response.data[0]);
+                $scope.select_set(response.data[0].id);
                 $scope.show_media_selecter = true;
                 $scope.show_set_selecter = false;
             } else {
