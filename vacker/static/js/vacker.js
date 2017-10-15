@@ -2,7 +2,8 @@
     var app = angular.module("vackerApp", []);
 
     var PhotoController = function($scope, $http) {
-
+        $scope.modal_id_list = [];
+        $scope.modal_itx = 0;
         $scope.selected_year = null;
         $scope.selected_month = null;
         $scope.show_month_selecter = true;
@@ -141,21 +142,37 @@
             $scope.selected_set = set_id;
         };
 
-        $scope.show_media_modal = function(media_id) {
-            $http.get('/photo/' + media_id)
+        $scope.show_media_modal = function(modal_id_list, media_itx) {
+            $scope.modal_id_list = modal_id_list;
+            $scope.modal_itx = media_itx;
+
+            $http.get('/photo/' + $scope.media[media_itx])
                 .then(function(response) {
-                    var rotation = {
-                      1: '0deg',
-                      3: '180deg',
-                      6: '90deg',
-                      8: '270deg'
-                    };
-                    document.getElementById('modalImg').style['-webkit-transform'] = 'rotate(' + rotation[response.data.orientation] + ')';
-                    document.getElementById("modalImg").src = "/photo/" + media_id + '/data';
-                    document.getElementById('photoModal').style.display = "block";
-                }, onHttpError);
-            
+                var rotation = {
+                  1: '0deg',
+                  3: '180deg',
+                  6: '90deg',
+                  8: '270deg'
+                };
+                document.getElementById('modalImg').style['-webkit-transform'] = 'rotate(' + rotation[response.data.orientation] + ')';
+                document.getElementById("modalImg").src = "/photo/" + $scope.media[media_itx] + '/data';
+                document.getElementById('photoModal').style.display = "block";
+            }, onHttpError);
         }
+        document.onkeypress = function(e){
+            e = e || window.event;
+            if (e.keyCode == 37) {
+                if ($scope.modal_itx != 0) {
+                    $scope.show_media_modal($scope.modal_id_list, ($scope.modal_itx - 1));
+                }
+            } else if (e.keyCode == 39) {
+                if ($scope.modal_itx != ($scope.modal_id_list.length - 1)) {
+                    $scope.show_media_modal($scope.modal_id_list, $scope.modal_itx + 1)
+                }
+            } else if (e.keyCode == 27) {
+                document.getElementById('photoModal').style.display = "none";
+            }
+        };
     };
 
     app.controller("PhotoController", PhotoController);
