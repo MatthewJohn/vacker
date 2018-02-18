@@ -25,6 +25,13 @@ class MediaFactory(object):
     def get_media_by_id(self, media_id):
         return vacker.media.photo.Photo(ObjectId(media_id))
 
+    def get_media_by_checksum(self, checksum):
+        db_connection = vacker.database.Database.get_database()
+        res = db_connection.media.find({'checksum': checksum})
+        if not res.count():
+            return None
+        return self.get_media_by_id(str(res[0]['_id']))
+
     def compare_file(self, file):
         analyser = vacker.analyser.Analyser()
         media_object = self.get_media_by_path(file)

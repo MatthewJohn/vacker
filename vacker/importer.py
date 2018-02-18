@@ -46,6 +46,13 @@ class Importer(object):
             return None
 
         analysed_info['checksum'] = self.analyser.get_checksum(photo)
+
+        # Check if photo is a duplicate
+        media_factory = vacker.media_factory.MediaFactory()
+        dupe_media = media_factory.get_media_by_checksum(analysed_info['checksum'])
+        if dupe_media:
+            return None
+
         analysed_info['path'] = photo
         analysed_info['mtime'] = datetime.datetime.fromtimestamp(os.stat(photo).st_mtime)
         analysed_info['set_id'] = None
