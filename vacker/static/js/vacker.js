@@ -129,6 +129,7 @@
             $scope.selected_day = day;
         };
         $scope.select_event = function(event_id) {
+            $scope.set_random = makeId();
             $scope.sets = [];
             $scope.media = [];
             $http.get("http://localhost:5000/events/" + event_id + "/sets")
