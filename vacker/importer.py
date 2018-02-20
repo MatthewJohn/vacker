@@ -84,6 +84,12 @@ class Importer(object):
         analysed_info['set_id'] = None
         analysed_info['event_id'] = None
 
+        # Set initial false value for backing up
+        analysed_info['backup'] = False
+
+        # Set rating to null, as photo has not yet been rated
+        analysed_info['rating'] = None
+
         # If the datetime has been obtained from the meta information,
         # split the year, month and day out for easier searching/indexing
         if 'datetime' in analysed_info and analysed_info['datetime']:
