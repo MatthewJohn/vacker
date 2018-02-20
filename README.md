@@ -12,4 +12,4 @@
     # Run server
     python ./bin/start_server.py
 
-    # Open up http://localhost:5000 in browser :)
+    # Open up http://localhost:5000/static/sample.html in browser :)
