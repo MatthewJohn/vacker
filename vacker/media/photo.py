@@ -19,13 +19,17 @@ class Photo(Media):
             pil_image = pil_image.rotate(270, expand=True)
         elif orientation == 8:
             pil_image = pil_image.rotate(90, expand=True)
-        pil_image.thumbnail((300, 300), PIL.Image.ANTIALIAS)
-        output = StringIO.StringIO()
-        pil_image.save(output, 'JPEG')
-        contents = output.getvalue()
-        output.close()
-        db = vacker.database.Database.get_database()
-        db.thumbnail.insert_one({'_id': ObjectId(self.get_id()), 'thumbnail_data': Binary(contents)})
+        try:
+            pil_image.thumbnail((300, 300), PIL.Image.ANTIALIAS)
+            output = StringIO.StringIO()
+            pil_image.save(output, 'JPEG')
+            contents = output.getvalue()
+            output.close()
+            db = vacker.database.Database.get_database()
+            db.thumbnail.insert_one({'_id': ObjectId(self.get_id()), 'thumbnail_data': Binary(contents)})
+        except:
+            print 'Error creating thumbnail: %s' % self.get_path()
+            raise
 
     def get_photo_data(self):
         with open(self.get_path(), 'rb') as rh:
