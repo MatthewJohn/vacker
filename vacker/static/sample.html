@@ -46,6 +46,20 @@
     <div class="item" ng-click="show_media_modal(media, $index)" ng-repeat="media_id in media">
       <img class="item-img" src="http://bestanimations.com/Science/Gears/loadinggears/loading-gear.gif" ng-src="{{ get_media_thumbnail_url(media_id) }}">
       <div class="item-title"></div>
+      <ul>
+        <li class="dropdown">
+          <a href="javascript:void(0)" class="dropbtn">
+            <div class="menu-button-bar"></div>
+            <div class="menu-button-bar"></div>
+            <div class="menu-button-bar"></div>
+          </a>
+          <div class="dropdown-content">
+            <a href="#">Link 1</a>
+            <a href="#">Link 2</a>
+            <a href="#">Link 3</a>
+          </div>
+        </li>
+      </ul>
     </div>
   </div>
 
