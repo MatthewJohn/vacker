@@ -88,14 +88,14 @@
             alert("HTTP error: " + reason);
         };
 
-        $http.get("http://localhost:5000/years")
+        $http.get("/years")
             .then(onYearsComplete, onHttpError);
 
         $scope.get_thumbnail_url = function (base_url, random_value) {
-            return "http://localhost:5000/" + base_url + "/thumbnail?" + random_value;
+            return "/" + base_url + "/thumbnail?" + random_value;
         };
         $scope.get_media_thumbnail_url = function(media_id) {
-            return "http://localhost:5000/thumbnail/" + media_id
+            return "/thumbnail/" + media_id
         }
 
         $scope.select_year = function(year) {
@@ -105,7 +105,7 @@
             $scope.events = [];
             $scope.sets = [];
             $scope.media = [];
-            $http.get("http://localhost:5000/years/" + year + "/months")
+            $http.get("/years/" + year + "/months")
                 .then(onMonthsComplete, onHttpError);
             $scope.selected_year = year;
         };
@@ -115,7 +115,7 @@
             $scope.events = [];
             $scope.sets = [];
             $scope.media = [];
-            $http.get("http://localhost:5000/years/" + $scope.selected_year + "/months/" + month + '/days')
+            $http.get("/years/" + $scope.selected_year + "/months/" + month + '/days')
                 .then(onDaysComplete, onHttpError);
             $scope.selected_month = month;
         };
@@ -124,7 +124,7 @@
             $scope.events = [];
             $scope.sets = [];
             $scope.media = [];
-            $http.get("http://localhost:5000/years/" + $scope.selected_year + "/months/" + $scope.selected_month + '/days/' + day + '/events')
+            $http.get("/years/" + $scope.selected_year + "/months/" + $scope.selected_month + '/days/' + day + '/events')
                 .then(onEventsComplete, onHttpError);
             $scope.selected_day = day;
         };
@@ -132,13 +132,13 @@
             $scope.set_random = makeId();
             $scope.sets = [];
             $scope.media = [];
-            $http.get("http://localhost:5000/events/" + event_id + "/sets")
+            $http.get("/events/" + event_id + "/sets")
                 .then(onSetsComplete, onHttpError);
             $scope.selected_event = event_id;
         };
         $scope.select_set = function(set_id) {
             $scope.media = [];
-            $http.get("http://localhost:5000/sets/" + set_id + "/media")
+            $http.get("/sets/" + set_id + "/media")
                 .then(onMediaComplete, onHttpError);
             $scope.selected_set = set_id;
         };
