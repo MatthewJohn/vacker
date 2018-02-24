@@ -1,13 +1,16 @@
 
 from flask import Flask, Response, abort
 from flask_restful import Resource, Api
+from flask_cors import CORS, cross_origin
 import datetime
 
 import vacker.media_factory
+import vacker.media_collection
 
 
 app = Flask(__name__)
 api = Api(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 @app.route('/photo/<string:media_id>/data')
 def get_photo_data(media_id):
@@ -16,7 +19,7 @@ def get_photo_data(media_id):
     response = Response(media.get_photo_data(), mimetype=media.get_mime_type())
     return response
 
-@app.route('/thumbnail/<string:media_id>')
+@app.route('/media/<string:media_id>/thumbnail')
 def get_thumbnail(media_id):
     media_factory = vacker.media_factory.MediaFactory()
     media = media_factory.get_media_by_id(media_id)
@@ -77,33 +80,69 @@ def get_set_thumbnail(set_id):
 
 class GetYears(Resource):
     def get(self):
-        media_factory = vacker.media_factory.MediaFactory()
-        return media_factory.get_years()
+        all_collection = vacker.media_collection.AllMedia()
+        return all_collection.get_years()
+
+class GetYearDetails(Resource):
+    def get(self, year):
+        year_collection = vacker.media_collection.YearCollection(year=year)
+        return year_collection.get_details()
+
+class ToggleYearBackup(Resource):
+    def post(self, year):
+        year_collection = vacker.media_collection.YearCollection(year=year)
+        return year_collection.toggle_backup()
 
 class GetMonths(Resource):
     def get(self, year):
-        media_factory = vacker.media_factory.MediaFactory()
-        return media_factory.get_months(year)
+        year_collection = vacker.media_collection.YearCollection(year=year)
+        return year_collection.get_child_months()
+
+class GetMonthDetails(Resource):
+    def get(self, year, month):
+        month_collection = vacker.media_collection.MonthCollection(year=year, month=month)
+        return month_collection.get_details()
+
+class ToggleMonthBackup(Resource):
+    def post(self, year, month):
+        month_collection = vacker.media_collection.MonthCollection(year=year, month=month)
+        return month_collection.toggle_backup()
+
 
 class GetDays(Resource):
     def get(self, year, month):
-        media_factory = vacker.media_factory.MediaFactory()
-        return media_factory.get_days(year, month)
+        month_collection = vacker.media_collection.MonthCollection(year=year, month=month)
+        return month_collection.get_child_days()
 
-class GetEvents(Resource):
+class GetDayDetails(Resource):
     def get(self, year, month, day):
-        media_factory = vacker.media_factory.MediaFactory()
-        return media_factory.get_events_by_date(datetime.datetime(year=year, month=month, day=day))
+        day_collection = vacker.media_collection.DayCollection(year=year, month=month, day=day)
+        return day_collection.get_details()
 
-class GetSets(Resource):
-    def get(self, event_id):
-        media_factory = vacker.media_factory.MediaFactory()
-        return media_factory.get_sets_by_event(event_id)
+class ToggleDayBackup(Resource):
+    def post(self, year, month, day):
+        day_collection = vacker.media_collection.DayCollection(year=year, month=month, day=day)
+        return day_collection.toggle_backup()
+
+class GetSetsByDay(Resource):
+    def get(self, year, month, day):
+        day_collection = vacker.media_collection.DayCollection(year=year, month=month, day=day)
+        return day_collection.get_child_sets()
+
+class GetSetDetails(Resource):
+    def get(self, set_id):
+        set_collection = vacker.media_collection.SetCollection(id=set_id)
+        return set_collection.get_details()
+
+class ToggleSetBackup(Resource):
+    def post(self, set_id):
+        set_collection = vacker.media_collection.SetCollection(id=set_id)
+        return set_collection.toggle_backup()
 
 class GetMediaBySet(Resource):
     def get(self, set_id):
-        media_factory = vacker.media_factory.MediaFactory()
-        return media_factory.get_media_by_set(set_id)
+        set_collection = vacker.media_collection.SetCollection(id=set_id)
+        return set_collection.get_media_ids()
 
 class GetPhoto(Resource):
     def get(self, media_id):
@@ -111,10 +150,35 @@ class GetPhoto(Resource):
         media = media_factory.get_media_by_id(media_id)
         return {'orientation': media.get_orientation()}
 
+class ToggleMediaBackup(Resource):
+    def post(self, media_id):
+        media_factory = vacker.media_factory.MediaFactory()
+        media = media_factory.get_media_by_id(media_id)
+        return media.toggle_backup()
+
+
+
+# Year API
 api.add_resource(GetYears, '/years')
+api.add_resource(GetYearDetails, '/years/<int:year>')
+api.add_resource(ToggleYearBackup, '/years/<int:year>/backup')
 api.add_resource(GetMonths, '/years/<int:year>/months')
+
+# Month APIs
+api.add_resource(GetMonthDetails, '/years/<int:year>/months/<int:month>')
+api.add_resource(ToggleMonthBackup, '/years/<int:year>/months/<int:month>/backup')
 api.add_resource(GetDays, '/years/<int:year>/months/<int:month>/days')
-api.add_resource(GetEvents, '/years/<int:year>/months/<int:month>/days/<int:day>/events')
-api.add_resource(GetSets, '/events/<string:event_id>/sets')
+
+# Day APIs
+api.add_resource(GetDayDetails, '/years/<int:year>/months/<int:month>/days/<int:day>')
+api.add_resource(ToggleDayBackup, '/years/<int:year>/months/<int:month>/days/<int:day>/backup')
+api.add_resource(GetSetsByDay, '/years/<int:year>/months/<int:month>/days/<int:day>/sets')
+
+# Set APIs
+api.add_resource(GetSetDetails, '/sets/<string:set_id>')
+api.add_resource(ToggleSetBackup, '/sets/<string:set_id>/backup')
 api.add_resource(GetMediaBySet, '/sets/<string:set_id>/media')
+
+# Photo
 api.add_resource(GetPhoto, '/photo/<string:media_id>')
+api.add_resource(ToggleMediaBackup, '/photo/<string:media_id>/backup')

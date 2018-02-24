@@ -87,6 +87,9 @@ class Importer(object):
         # Set initial false value for backing up
         analysed_info['backup'] = False
 
+        # Set initial false value for backing up
+        analysed_info['hide'] = False
+
         # Set rating to null, as photo has not yet been rated
         analysed_info['rating'] = None
 
