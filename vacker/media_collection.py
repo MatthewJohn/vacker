@@ -14,6 +14,9 @@ class MediaCollection(object):
     def _initialise(self):
         pass
 
+    def show_hidden(self):
+        self._show_hidden = True
+
     def get_media_ids(self):
         db_connection = vacker.database.Database.get_database()
         res = db_connection.media.aggregate([{'$match': self._get_media_filter()}])
@@ -32,7 +35,8 @@ class MediaCollection(object):
             'id': self.get_id(),
             'name': self.get_name(),
             'media_count': self.get_media_count(),
-            'backup_state': self.get_backup_state()
+            'backup_state': self.get_backup_state(),
+            'hidden_state': self.get_hidden_state()
         }
 
     def get_backup_state(self):
@@ -62,14 +66,37 @@ class MediaCollection(object):
         db_connection.media.update(self._get_media_filter(), {'$set': {'backup': new_backup_state}}, multi=True)
         return True
 
-    def hide(self):
+    def get_hidden_state(self):
+        """
+        Determines the hidden state of the media in the collection.
+        Returns 0 - No media is hidden
+                1 - Some media is hidden
+                2 - All media is hidden
+        """
+        media_filter = self._get_media_filter()
+        media_filter['hide'] = True
         db_connection = vacker.database.Database.get_database()
-        db_connection.media.update(self._get_media_filter(), {'$set': {'hide': True}}, multi=True)
-        return True
+        hidden_count = db_connection.media.find(media_filter).count()
+        # If none are hidden, return 0
+        if hidden_count == 0:
+            return 0
 
-    def unhide(self):
+        # If all are hiden, return 2
+        if hidden_count == self.get_media_count():
+            return 2
+        # If hidden has not been specified, return 0, as none shown
+        # will be hidden
+        if not self._show_hidden:
+            return 0
+        # Otherwise, if some are hidden (but hidden are shown), use this status
+        if hidden_count < self.get_media_count():
+            return 1
+
+    def toggle_hide(self):
+        current_hidden_state = self.get_hidden_state()
+        new_hidden_state = False if (current_hidden_state == 2) else True
         db_connection = vacker.database.Database.get_database()
-        db_connection.media.update(self._get_media_filter(), {'$set': {'hide': False}}, multi=True)
+        db_connection.media.update(self._get_media_filter(), {'$set': {'hide': new_hidden_state}}, multi=True)
         return True
 
     def _get_media_filter(self):

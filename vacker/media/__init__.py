@@ -25,7 +25,15 @@ class Media(object):
 
     def get_orientation(self):
         database_connection = vacker.database.Database.get_database()
-        return database_connection.media.find_one({'_id': ObjectId(self.get_id())})['orientation'] 
+        return database_connection.media.find_one({'_id': ObjectId(self.get_id())})['orientation']
+
+    def get_backup_state(self):
+        database_connection = vacker.database.Database.get_database()
+        return database_connection.media.find_one({'_id': ObjectId(self.get_id())})['backup']
+
+    def get_hidden_state(self):
+        database_connection = vacker.database.Database.get_database()
+        return database_connection.media.find_one({'_id': ObjectId(self.get_id())})['hide']
 
     def get_mime_type(self):
         database_connection = vacker.database.Database.get_database()
@@ -71,4 +79,21 @@ class Media(object):
         database_connection = vacker.database.Database.get_database()
         return database_connection.thumbnail.find({'_id': self.get_id()})[0]['thumbnail_data']
 
+    def toggle_backup(self):
+        database_connection = vacker.database.Database.get_database()
+        current_backup_state = self.get_backup_state()
+        database_connection.media.update({'_id': ObjectId(self.get_id())}, {'$set': {'backup': (not current_backup_state)}})
+        return True
 
+    def toggle_hide(self):
+        database_connection = vacker.database.Database.get_database()
+        current_hidden_state = self.get_hidden_state()
+        database_connection.media.update({'_id': ObjectId(self.get_id())}, {'$set': {'hide': (not current_hidden_state)}})
+        return True
+
+    def get_details(self):
+        return {
+            'orientation': self.get_orientation(),
+            'backup_state': 2 if self.get_backup_state() else 0,
+            'hidden_state': 2 if self.get_hidden_state() else 0
+        }
