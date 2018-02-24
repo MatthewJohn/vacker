@@ -46,12 +46,16 @@ class Importer(object):
             # If no media object exists, something went wrong, so return early
             if not media_obj:
                 return False
+            try:
+                # Create thumbnail for image
+                media_obj.create_thumbnail()
+            except:
+                media_obj.delete()
+                return
             # Update the sets that the photo are in
             media_obj.update_sets()
             # Update any events that the photo are in
             media_obj.update_events()
-            # Create thumbnail for image
-            media_obj.create_thumbnail()
         elif file_type is vacker.analyser.MediaType.VIDEO:
             # Import video object
             media_obj = self.import_video(file)

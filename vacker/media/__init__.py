@@ -39,6 +39,10 @@ class Media(object):
         database_connection = vacker.database.Database.get_database()
         return database_connection.media.find_one({'_id': ObjectId(self.get_id())})['mime_type'] 
 
+    def delete(self):
+        database_connection = vacker.database.Database.get_database()
+        database_connection.media.remove({'_id': ObjectId(self.get_id())})
+
     def update_sets(self):
         if not self.get_date():
             return
