@@ -38,32 +38,12 @@ def get_thumbnail(media_id):
     response.headers['Pragma'] = 'no-cache'
     return response
 
-@app.route('/years/<int:year>/thumbnail')
-def get_year_thumbnail(year):
-    year_collection = vacker.media_collection.YearCollection(year=year)
+@app.route('/date/<int:date_id>/thumbnail')
+def get_date_thumbnail(date_id):
+    collection = vacker.media_collection.DateCollection.getCollectionFromDateId(date_id)
     if show_hidden():
-        year_collection.show_hidden()
-    media_id = year_collection.get_random_thumbnail()
-    if not media_id:
-        abort(404)
-    return get_thumbnail(media_id)
-
-@app.route('/years/<int:year>/months/<int:month>/thumbnail')
-def get_month_thumbnail(year, month):
-    month_collection = vacker.media_collection.MonthCollection(year=year, month=month)
-    if show_hidden():
-        month_collection.show_hidden()
-    media_id = month_collection.get_random_thumbnail()
-    if not media_id:
-        abort(404)
-    return get_thumbnail(media_id)
-
-@app.route('/years/<int:year>/months/<int:month>/days/<int:day>/thumbnail')
-def get_day_thumbnail(year, month, day):
-    day_collection = vacker.media_collection.DayCollection(year=year, month=month, day=day)
-    if show_hidden():
-        day_collection.show_hidden()
-    media_id = day_collection.get_random_thumbnail()
+        collection.show_hidden()
+    media_id = collection.get_random_thumbnail()
     if not media_id:
         abort(404)
     return get_thumbnail(media_id)
@@ -85,90 +65,54 @@ class GetYears(Resource):
             all_collection.show_hidden()
         return all_collection.get_years()
 
-class GetYearDetails(Resource):
-    def get(self, year):
-        year_collection = vacker.media_collection.YearCollection(year=year)
+class GetDateDetails(Resource):
+    def get(self, date_id):
+        collection = vacker.media_collection.DateCollection.getCollectionFromDateId(date_id)
         if show_hidden():
-            year_collection.show_hidden()
-        return year_collection.get_details()
+            collection.show_hidden()
+        return collection.get_details()
 
-class ToggleYearBackup(Resource):
-    def post(self, year):
-        year_collection = vacker.media_collection.YearCollection(year=year)
+class ToggleDateBackup(Resource):
+    def post(self, date_id):
+        collection = vacker.media_collection.DateCollection.getCollectionFromDateId(date_id)
         if show_hidden():
-            year_collection.show_hidden()
-        return year_collection.toggle_backup()
+            collection.show_hidden()
+        return collection.toggle_backup()
 
-class ToggleYearHide(Resource):
-    def post(self, year):
-        year_collection = vacker.media_collection.YearCollection(year=year)
+class ToggleDateHide(Resource):
+    def post(self, date_id):
+        collection = vacker.media_collection.DateCollection.getCollectionFromDateId(date_id)
         if show_hidden():
-            year_collection.show_hidden()
-        return year_collection.toggle_hide()
+            collection.show_hidden()
+        return collection.toggle_hide()
 
 class GetMonths(Resource):
-    def get(self, year):
-        year_collection = vacker.media_collection.YearCollection(year=year)
+    def get(self, date_id):
+        collection = vacker.media_collection.DateCollection.getCollectionFromDateId(date_id)
         if show_hidden():
-            year_collection.show_hidden()
-        return year_collection.get_child_months()
-
-class GetMonthDetails(Resource):
-    def get(self, year, month):
-        month_collection = vacker.media_collection.MonthCollection(year=year, month=month)
-        if show_hidden():
-            month_collection.show_hidden()
-        return month_collection.get_details()
-
-class ToggleMonthBackup(Resource):
-    def post(self, year, month):
-        month_collection = vacker.media_collection.MonthCollection(year=year, month=month)
-        if show_hidden():
-            month_collection.show_hidden()
-        return month_collection.toggle_backup()
-
-class ToggleMonthHide(Resource):
-    def post(self, year, month):
-        month_collection = vacker.media_collection.MonthCollection(year=year, month=month)
-        if show_hidden():
-            month_collection.show_hidden()
-        return month_collection.toggle_hide()
+            collection.show_hidden()
+        return collection.get_child_months()
 
 class GetDays(Resource):
-    def get(self, year, month):
-        month_collection = vacker.media_collection.MonthCollection(year=year, month=month)
+    def get(self, date_id):
+        collection = vacker.media_collection.DateCollection.getCollectionFromDateId(date_id)
         if show_hidden():
-            month_collection.show_hidden()
-        return month_collection.get_child_days()
+            collection.show_hidden()
+        return collection.get_child_days()
 
-class GetDayDetails(Resource):
-    def get(self, year, month, day):
-        day_collection = vacker.media_collection.DayCollection(year=year, month=month, day=day)
+class GetSets(Resource):
+    def get(self, date_id):
+        collection = vacker.media_collection.DateCollection.getCollectionFromDateId(date_id)
         if show_hidden():
-            day_collection.show_hidden()
-        return day_collection.get_details()
+            collection.show_hidden()
+        return collection.get_child_sets()
 
-class ToggleDayBackup(Resource):
-    def post(self, year, month, day):
-        day_collection = vacker.media_collection.DayCollection(year=year, month=month, day=day)
+class GetMediaByDate(Resource):
+    def get(self, date_id):
+        collection = vacker.media_collection.DateCollection.getCollectionFromDateId(date_id)
         if show_hidden():
-            day_collection.show_hidden()
-        return day_collection.toggle_backup()
-
-class ToggleDayHide(Resource):
-    def post(self, year, month, day):
-        day_collection = vacker.media_collection.DayCollection(year=year, month=month, day=day)
-        if show_hidden():
-            print 'hiddden'
-            day_collection.show_hidden()
-        return day_collection.toggle_hide()
-
-class GetSetsByDay(Resource):
-    def get(self, year, month, day):
-        day_collection = vacker.media_collection.DayCollection(year=year, month=month, day=day)
-        if show_hidden():
-            day_collection.show_hidden()
-        return day_collection.get_child_sets()
+            collection.show_hidden()
+        return collection.get_media_ids()
 
 class GetSetDetails(Resource):
     def get(self, set_id):
@@ -219,22 +163,13 @@ class ToggleMediaHide(Resource):
 
 # Year API
 api.add_resource(GetYears, '/years')
-api.add_resource(GetYearDetails, '/years/<int:year>')
-api.add_resource(ToggleYearBackup, '/years/<int:year>/backup')
-api.add_resource(ToggleYearHide, '/years/<int:year>/hide')
-api.add_resource(GetMonths, '/years/<int:year>/months')
-
-# Month APIs
-api.add_resource(GetMonthDetails, '/years/<int:year>/months/<int:month>')
-api.add_resource(ToggleMonthBackup, '/years/<int:year>/months/<int:month>/backup')
-api.add_resource(ToggleMonthHide, '/years/<int:year>/months/<int:month>/hide')
-api.add_resource(GetDays, '/years/<int:year>/months/<int:month>/days')
-
-# Day APIs
-api.add_resource(GetDayDetails, '/years/<int:year>/months/<int:month>/days/<int:day>')
-api.add_resource(ToggleDayBackup, '/years/<int:year>/months/<int:month>/days/<int:day>/backup')
-api.add_resource(ToggleDayHide, '/years/<int:year>/months/<int:month>/days/<int:day>/hide')
-api.add_resource(GetSetsByDay, '/years/<int:year>/months/<int:month>/days/<int:day>/sets')
+api.add_resource(GetDateDetails, '/date/<int:date_id>')
+api.add_resource(ToggleDateBackup, '/date/<int:date_id>/backup')
+api.add_resource(ToggleDateHide, '/date/<int:year>/hide')
+api.add_resource(GetMonths, '/date/<int:date_id>/months')
+api.add_resource(GetDays, '/date/<int:date_id>/days')
+api.add_resource(GetSets, '/date/<int:date_id>/sets')
+api.add_resource(GetMediaByDate, '/date/<int:date_id>/media')
 
 # Set APIs
 api.add_resource(GetSetDetails, '/sets/<string:set_id>')

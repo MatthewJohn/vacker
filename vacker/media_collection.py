@@ -6,8 +6,9 @@ import vacker.database
 
 class MediaCollection(object):
 
+    _show_hidden = False
+
     def __init__(self, id):
-        self._show_hidden = False
         self._id = id
         self._initialise()
 
@@ -96,7 +97,6 @@ class MediaCollection(object):
         current_hidden_state = self.get_hidden_state()
         new_hidden_state = False if (current_hidden_state == 2) else True
         db_connection = vacker.database.Database.get_database()
-        print self._get_media_filter()
         db_connection.media.update(self._get_media_filter(), {'$set': {'hide': new_hidden_state}}, multi=True)
         return True
 
@@ -110,10 +110,22 @@ class MediaCollection(object):
         db_connection = vacker.database.Database.get_database()
         return db_connection.media.find(self._get_media_filter()).count()
 
-    def _get_child_ids(self, child_type):
+    def _get_child_ids(self, child_type, return_agg=None):
         db_connection = vacker.database.Database.get_database()
-        res = db_connection.media.aggregate([{'$match': self._get_media_filter()}, {'$group': {'_id': child_type}}])
-        child_ids = [str(item['_id']) for item in res if item['_id'] is not None]
+        res = db_connection.media.aggregate([{'$match': self._get_media_filter()},
+                                             {'$sort': {'datetime': 1}},
+                                             {'$group': {'_id': child_type}}])
+        child_ids = []
+        for item in res:
+            if return_agg:
+                item_id = ''
+                for id_key in return_agg:
+                    item_id += str(item['_id'][id_key]) if len(str(item['_id'][id_key])) != 1 else '0%s' % str(item['_id'][id_key])
+                child_ids.append(item_id)
+                sorted(child_ids, key=lambda x: int(x))
+            else:
+                child_ids.append(str(item['_id']))
+
         child_ids.sort()
         return child_ids
 
@@ -133,6 +145,25 @@ class MediaCollection(object):
 
 class DateCollection(MediaCollection):
 
+    @staticmethod
+    def getCollectionFromDateId(media_id):
+        year, month, day = DateCollection.convertDateId(media_id)
+        if day:
+            return DayCollection(media_id)
+        elif month:
+            return MonthCollection(media_id)
+        return YearCollection(media_id)
+
+    @staticmethod
+    def convertDateId(col_id):
+        year = int(str(col_id)[0:4]) if len(str(col_id)) >= 4 else None
+        month = int(str(col_id)[4:6]) if len(str(col_id)) >= 6 else None 
+        day = int(str(col_id)[6:8]) if len(str(col_id)) >= 8 else None
+        return year, month, day
+
+    def _initialise(self):
+        self._year, self._month, self._day = DateCollection.convertDateId(self.get_id())
+
     def get_year(self):
         return self._year
 
@@ -143,10 +174,10 @@ class DateCollection(MediaCollection):
         return self._day
 
     def get_child_months(self):
-        return self._get_child_ids('$m')
+        return self._get_child_ids({'y': '$y', 'm': '$m'}, ['y', 'm'])
 
     def get_child_days(self):
-        return self._get_child_ids('$d')
+        return self._get_child_ids({'y': '$y', 'm': '$m', 'd': '$d'}, ['y', 'm', 'd'])
 
     def get_child_events(self):
         return self._get_child_ids('$event_id')
@@ -154,21 +185,18 @@ class DateCollection(MediaCollection):
 class AllMedia(DateCollection):
 
     def __init__(self):
-        self._show_hidden = False
+        pass
 
     def get_years(self):
         return self._get_child_ids('$y')
 
 
 class YearCollection(DateCollection):
-    
-    def __init__(self, year):
-        super(YearCollection, self).__init__(year)
-        self._year = year
 
     def _get_media_filter(self):
         media_filter = super(YearCollection, self)._get_media_filter()
         media_filter['y'] = self.get_year()
+        print media_filter
         return media_filter
 
     def get_name(self):
@@ -176,14 +204,9 @@ class YearCollection(DateCollection):
 
 
 class MonthCollection(DateCollection):
-    
-    def __init__(self, year, month):
-        super(MonthCollection, self).__init__(month)
-        self._year = year
-        self._month = month
 
     def get_name(self):
-        return ['Jan', 'Feb', 'March', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'][int(self.get_id()) - 1]
+        return ['Jan', 'Feb', 'March', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'][int(self.get_month()) - 1]
 
     def _get_media_filter(self):
         media_filter = super(MonthCollection, self)._get_media_filter()
@@ -193,15 +216,9 @@ class MonthCollection(DateCollection):
 
 
 class DayCollection(DateCollection):
-    
-    def __init__(self, year, month, day):
-        super(DayCollection, self).__init__(day)
-        self._year = year
-        self._month = month
-        self._day = day
 
     def get_name(self):
-        str_id = str(self.get_id())
+        str_id = str(self.get_day())
         if str_id.endswith('1'):
             return '%s%s' % (str_id, 'st')
         if str_id.endswith('2'):
