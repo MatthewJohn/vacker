@@ -114,7 +114,10 @@ class MediaCollection(object):
         db_connection = vacker.database.Database.get_database()
         res = db_connection.media.aggregate([{'$match': self._get_media_filter()},
                                              {'$sort': {'datetime': 1}},
-                                             {'$group': {'_id': child_type}}])
+                                             {'$group': {'_id': child_type}
+                                             # Get date by adding
+                                             # , {'date': {'$min': '$datetime'}}
+                                             }])
         child_ids = []
         for item in res:
             if return_agg:
@@ -186,6 +189,14 @@ class AllMedia(DateCollection):
 
     def __init__(self):
         pass
+
+    def get_backup_media_paths(self, strip_path):
+        import re
+        db_connection = vacker.database.Database.get_database()
+        return_rows = []
+        for media in db_connection.media.find({'backup': True}):
+            return_rows.append(re.sub('^%s/?' % strip_path, '+ **/', media['path']))
+        return "\n".join(return_rows)
 
     def get_years(self):
         return self._get_child_ids('$y')

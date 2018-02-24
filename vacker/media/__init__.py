@@ -99,5 +99,6 @@ class Media(object):
         return {
             'orientation': self.get_orientation(),
             'backup_state': 2 if self.get_backup_state() else 0,
-            'hidden_state': 2 if self.get_hidden_state() else 0
+            'hidden_state': 2 if self.get_hidden_state() else 0,
+            'datetime': self.get_date().strftime('%a %d %b %H:%M:%S')
         }
