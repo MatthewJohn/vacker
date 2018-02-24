@@ -96,6 +96,7 @@ class MediaCollection(object):
         current_hidden_state = self.get_hidden_state()
         new_hidden_state = False if (current_hidden_state == 2) else True
         db_connection = vacker.database.Database.get_database()
+        print self._get_media_filter()
         db_connection.media.update(self._get_media_filter(), {'$set': {'hide': new_hidden_state}}, multi=True)
         return True
 
@@ -118,6 +119,16 @@ class MediaCollection(object):
 
     def get_child_sets(self):
         return self._get_child_ids('$set_id')
+
+    def get_random_thumbnail(self):
+        db_connection = vacker.database.Database.get_database()
+        media = db_connection.media.aggregate([
+            {'$match': self._get_media_filter()},
+            {'$sample': {'size': 1}}
+        ])
+        for media_itx in media:
+            return str(media_itx['_id'])
+        return None
 
 
 class DateCollection(MediaCollection):

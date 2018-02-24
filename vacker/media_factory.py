@@ -37,34 +37,3 @@ class MediaFactory(object):
         analyser = vacker.analyser.Analyser()
         media_object = self.get_media_by_path(file)
         return (analyser.get_checksum(file) == media_object.get_checksum())
-
-
-    def get_random_media_by_date(self, start_date, end_date):
-        db_connection = vacker.database.Database.get_database()
-        media = db_connection.media.aggregate([
-            {'$match': {'datetime': {'$gte': start_date, '$lt': end_date}}},
-            {'$sample': {'size': 1}}
-        ])
-        for media_itx in media:
-            return self.get_media_by_id(str(media_itx['_id']))
-        return None
-
-    def get_random_media_by_event(self, event_id):
-        db_connection = vacker.database.Database.get_database()
-        media = db_connection.media.aggregate([
-            {'$match': {'event_id': ObjectId(event_id)}},
-            {'$sample': {'size': 1}}
-        ])
-        for media_itx in media:
-            return self.get_media_by_id(str(media_itx['_id']))
-        return None
-
-    def get_random_media_by_set(self, set_id):
-        db_connection = vacker.database.Database.get_database()
-        media = db_connection.media.aggregate([
-            {'$match': {'set_id': ObjectId(set_id)}},
-            {'$sample': {'size': 1}}
-        ])
-        for media_itx in media:
-            return self.get_media_by_id(str(media_itx['_id']))
-        return None
