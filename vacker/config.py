@@ -1,4 +1,5 @@
 
+from os import environ
 
 class Config(object):
 
@@ -14,6 +15,8 @@ class Config(object):
 
     @staticmethod
     def get(key):
+        if key in environ:
+            return environ[key]
         if key in Config.DEFAULT_CONFIG:
             return Config.DEFAULT_CONFIG[key]
 
