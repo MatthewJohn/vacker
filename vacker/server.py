@@ -10,7 +10,8 @@ import vacker.media_collection
 
 app = Flask(__name__)
 api = Api(app)
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app, resources={"*": {"origins": "*"}})
+
 
 def show_hidden():
     if 'show_hidden' in request.args and str(request.args['show_hidden']) == '1':

@@ -55,7 +55,8 @@ class Importer(object):
             # Update the sets that the photo are in
             media_obj.update_sets()
             # Update any events that the photo are in
-            media_obj.update_events()
+            # DISABLED as new web interface does not use it
+            #media_obj.update_events()
         elif file_type is vacker.analyser.MediaType.VIDEO:
             # Import video object
             media_obj = self.import_video(file)
