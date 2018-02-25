@@ -4,6 +4,8 @@ from os import environ
 class Config(object):
 
     DEFAULT_CONFIG = {
+        'LISTEN_HOST': '127.0.0.1',
+        'DEBUG': False,
         'MONGO_HOST': 'localhost',
         'MONGO_PORT': 27017,
         'MONGO_DATABASE': 'vacker',
