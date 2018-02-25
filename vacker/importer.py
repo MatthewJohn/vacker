@@ -40,8 +40,11 @@ class Importer(object):
 
         # Determine the type of file, and perform import depending on type
         if file_type is vacker.analyser.MediaType.PHOTO:
-            # Import photo object
-            media_obj = self.import_photo(file)
+            try:
+                # Import photo object
+                media_obj = self.import_photo(file)
+            except:
+                return
 
             # If no media object exists, something went wrong, so return early
             if not media_obj:
