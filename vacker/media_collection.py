@@ -20,9 +20,8 @@ class MediaCollection(object):
 
     def get_media_ids(self):
         db_connection = vacker.database.Database.get_database()
-        res = db_connection.media.aggregate([{'$match': self._get_media_filter()}])
+        res = db_connection.media.aggregate([{'$match': self._get_media_filter()}, {'$sort': {'datetime': 1}}])
         child_ids = [str(item['_id']) for item in res if item['_id'] is not None]
-        child_ids.sort()
         return child_ids
 
     def get_id(self):
@@ -113,11 +112,11 @@ class MediaCollection(object):
     def _get_child_ids(self, child_type, return_agg=None):
         db_connection = vacker.database.Database.get_database()
         res = db_connection.media.aggregate([{'$match': self._get_media_filter()},
-                                             {'$sort': {'datetime': 1}},
-                                             {'$group': {'_id': child_type}
+                                             {'$group': {'_id': child_type, 'datetime': {'$min': '$datetime'}}},
+                                             {'$sort': {'datetime': 1}}
                                              # Get date by adding
                                              # , {'date': {'$min': '$datetime'}}
-                                             }])
+                                             ])
         child_ids = []
         for item in res:
             if return_agg:
@@ -125,11 +124,9 @@ class MediaCollection(object):
                 for id_key in return_agg:
                     item_id += str(item['_id'][id_key]) if len(str(item['_id'][id_key])) != 1 else '0%s' % str(item['_id'][id_key])
                 child_ids.append(item_id)
-                sorted(child_ids, key=lambda x: int(x))
             else:
                 child_ids.append(str(item['_id']))
 
-        child_ids.sort()
         return child_ids
 
     def get_child_sets(self):
