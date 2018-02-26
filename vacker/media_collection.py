@@ -207,7 +207,6 @@ class YearCollection(DateCollection):
     def _get_media_filter(self):
         media_filter = super(YearCollection, self)._get_media_filter()
         media_filter['y'] = self.get_year()
-        print media_filter
         return media_filter
 
     def get_name(self):

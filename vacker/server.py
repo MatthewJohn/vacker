@@ -166,7 +166,7 @@ class ToggleMediaHide(Resource):
 api.add_resource(GetYears, '/years')
 api.add_resource(GetDateDetails, '/date/<int:date_id>')
 api.add_resource(ToggleDateBackup, '/date/<int:date_id>/backup')
-api.add_resource(ToggleDateHide, '/date/<int:year>/hide')
+api.add_resource(ToggleDateHide, '/date/<int:date_id>/hide')
 api.add_resource(GetMonths, '/date/<int:date_id>/months')
 api.add_resource(GetDays, '/date/<int:date_id>/days')
 api.add_resource(GetSets, '/date/<int:date_id>/sets')
