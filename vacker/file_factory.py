@@ -33,7 +33,7 @@ class FileFactory(object):
 
     def get_file_by_checksum(self, sha1, sha512):
         db_connection = vacker.database.Database.get_database()
-        res = db_connection.search('sha512: {sha512} AND sha1: {sha1}'.format(
+        reuslts = db_connection.search('sha512: {sha512} AND sha1: {sha1}'.format(
             sha1=sha1, sha512=sha512))
         for res in reuslts:
             return self.get_file_by_document(res)
