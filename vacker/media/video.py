@@ -1,5 +1,5 @@
 
-from vacker.media import Media
+from vacker.media.media import Media
 
 class Video(Media):
     pass

@@ -6,7 +6,7 @@ import hashlib
 from datetime import datetime
 
 class MediaType(object):
-    UNSUPPORTED = 0
+    GENERIC_FILE = 0
     PHOTO = 1
     VIDEO = 2
 
@@ -15,14 +15,14 @@ class Analyser(object):
     def detect_media_type(self, path):
         object_mime_type = MimeTypes().guess_type(path)[0]
         if object_mime_type is None:
-            return MediaType.UNSUPPORTED
+            return MediaType.GENERIC_FILE
 
         if object_mime_type.split('/')[0] == 'image':
-            return MediaType.PHOTO
+            return MediaType.GENERIC_FILE
         if object_mime_type.split('/')[0] == 'video':
-            return MediaType.VIDEO
+            return MediaType.GENERIC_FILE
         else:
-            return MediaType.UNSUPPORTED
+            return MediaType.GENERIC_FILE
 
     def get_image_data(self, path):
         pil_image = PIL.Image.open(path)
@@ -103,3 +103,30 @@ class Analyser(object):
                     break
                 md5.update(data)
         return md5.hexdigest()
+
+
+
+    def get_checksum(self, path):
+        block_size = 2**20
+        md5 = hashlib.md5()
+        with open(path, 'rb') as f:
+            while True:
+                data = f.read(block_size)
+                if not data:
+                    break
+                md5.update(data)
+        return md5.hexdigest()
+
+
+    def get_checksums(self, path):
+        block_size = 2**20
+        sha512 = hashlib.sha512()
+        sha1 = hashlib.sha1()
+        with open(path, 'rb') as fh_:
+            while True:
+                data = fh_.read(block_size)
+                if not data:
+                    break
+                sha512.update(data)
+                sha1.update(data)
+        return sha1.hexdigest(), sha512.hexdigest()

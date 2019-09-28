@@ -12,7 +12,9 @@ class Config(object):
         'DEFAULT_SET_INTERVAL': 30,
         'DEFAULT_EVENT_INTERVAL': 1800,
         # Allow for any variation of 500x500, e.g. 250x1000
-        'MINIMUM_RESOLUTION': 250000
+        'MINIMUM_RESOLUTION': 250000,
+        'THUMBNAIL_DIR': './thumbnails',
+        'SOLR_URL': 'http://localhost:8983/solr/vacker/'
     }
 
     @staticmethod
@@ -21,4 +23,3 @@ class Config(object):
             return environ[key]
         if key in Config.DEFAULT_CONFIG:
             return Config.DEFAULT_CONFIG[key]
-

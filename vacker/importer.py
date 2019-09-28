@@ -1,9 +1,11 @@
 
 import os
 import datetime
+from mimetypes import MimeTypes
+import uuid
 
 import vacker.analyser
-import vacker.media_factory
+import vacker.file_factory
 import vacker.database
 import vacker.config
 
@@ -12,7 +14,7 @@ class Importer(object):
 
     def __init__(self):
         self.analyser = vacker.analyser.Analyser()
-        self.media_factory = vacker.media_factory.MediaFactory()
+        self.file_factory = vacker.file_factory.FileFactory()
         self.database = vacker.database.Database()
 
     def import_directory(self, directory, verify=False):
@@ -21,21 +23,20 @@ class Importer(object):
             # Iterate over files and...
             for file in files:
                 # Import each one
+                print('Importing ' + file)
                 self.import_file(os.path.join(root, file), verify=verify)
+
+        self.database.complete_batch()
 
     def import_file(self, file, verify):
         # Determine file type
         file_type = self.analyser.detect_media_type(file)
 
-        # If the file extension is not supported, return
-        if file_type is vacker.analyser.MediaType.UNSUPPORTED:
-            return False
-
         # Only continue if:
         #  - File does not already exist in DB
         #  - Files already exists, verify has been passed and the actual file is not the same as DB
-        existing_file = self.media_factory.get_media_by_path(file)
-        if existing_file and (not verify or self.media_factory.compare_file(file)):
+        existing_file = self.file_factory.get_file_by_path(file)
+        if existing_file and (not verify or self.file_factory.compare_file(file)):
             return False
 
         # Determine the type of file, and perform import depending on type
@@ -64,10 +65,32 @@ class Importer(object):
             # Import video object
             media_obj = self.import_video(file)
 
+        else:
+            media_obj = self.import_generic(file)
+
         # If all succeceded, return Media Object.
         return media_obj
 
+    def import_generic(self, file_):
+        """Exctract file information and import into solr"""
+        file_data = {
+            'id': uuid.uuid4(),
+            'size': int(os.path.getsize(file_)),
+            'path': file_,
+            'file_name': file_.split('/')[-1],
+            'directory': '/'.join(file_.split('/')[0:-1]),
+            'mime_type': MimeTypes().guess_type(file_)
+        }
+        file_data['sha512'], file_data['sha1'] = self.analyser.get_checksums(
+            file_)
+        file_data['extension'] = (file_data['file_name'].split('.')[-1]
+                                  if '.' in file_data['file_name'] else '')
+
+        self.database.insert_batch(file_data)
+
+
     def import_photo(self, photo):
+
         # Obtain image meta data
         analysed_info = self.analyser.get_image_data(photo)
 
@@ -79,8 +102,8 @@ class Importer(object):
         analysed_info['checksum'] = self.analyser.get_checksum(photo)
 
         # Check if photo is a duplicate
-        media_factory = vacker.media_factory.MediaFactory()
-        dupe_media = media_factory.get_media_by_checksum(analysed_info['checksum'])
+        file_factory = vacker.file_factory.MediaFactory()
+        dupe_media = file_factory.get_media_by_checksum(analysed_info['checksum'])
         if dupe_media:
             return None
 
@@ -114,4 +137,4 @@ class Importer(object):
 
     def import_video(self, video):
         # Sorry, don't support videos YET
-        print 'you got vidz bro?'
+        print('you got vidz bro?')

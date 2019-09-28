@@ -1,12 +1,13 @@
 
 import PIL
-import StringIO
+from io import StringIO
 from bson.objectid import ObjectId
 from bson.binary import Binary
 
 
-from vacker.media import Media
+from vacker.media.media import Media
 import vacker.database
+
 
 class Photo(Media):
 
@@ -28,10 +29,10 @@ class Photo(Media):
             db = vacker.database.Database.get_database()
             db.thumbnail.insert_one({'_id': ObjectId(self.get_id()), 'thumbnail_data': Binary(contents)})
         except:
-            print 'Error creating thumbnail: %s' % self.get_path()
+            print('Error creating thumbnail: {0}'.format(self.get_path()))
             raise
 
     def get_photo_data(self):
-        with open(self.get_path(), 'rb') as rh:
-            data = rh.read()
+        with open(self.get_path(), 'rb') as rh_:
+            data = rh_.read()
         return data
