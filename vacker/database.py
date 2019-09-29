@@ -6,26 +6,23 @@ from vacker.config import Config
 
 
 class Database(object):
-    CONNECTION = None
 
-    MAX_BATCH_SIZE = 100
-
-    def __init__(self):
-        self._batch = []
-        Database._solr_conn = pysolr.Solr(Config.get('SOLR_URL'))
+    MAX_BATCH_SIZE = 1
+    _CONNECTION = None
+    _BATCH = []
 
     @staticmethod
     def get_database():
-        return Database._solr_conn
-        if Database.CONNECTION is None:
-            Database.CONNECTION = MongoClient(Config.get('MONGO_HOST'), Config.get('MONGO_PORT'))
-        return Database.CONNECTION[Config.get('MONGO_DATABASE')]
+        if Database._CONNECTION is None:
+            Database._CONNECTION = pysolr.Solr(Config.get('SOLR_URL'))
+        return Database._CONNECTION
 
     def insert_batch(self, _document):
-        self._batch.append(_document)
-        if len(self._batch) >= self.MAX_BATCH_SIZE:
+        print('Inserting..')
+        Database._BATCH.append(_document)
+        if len(Database._BATCH) >= self.MAX_BATCH_SIZE:
             self.complete_batch()
 
     def complete_batch(self):
-        self._solr_conn.add(self._batch, commit=True)
-        self._batch = []
+        self.get_database().add(Database._BATCH, commit=True)
+        Database._BATCH = []

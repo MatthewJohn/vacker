@@ -79,9 +79,9 @@ class Importer(object):
             'path': file_,
             'file_name': file_.split('/')[-1],
             'directory': '/'.join(file_.split('/')[0:-1]),
-            'mime_type': MimeTypes().guess_type(file_)
+            'mime_type': MimeTypes().guess_type(file_)[0]
         }
-        file_data['sha512'], file_data['sha1'] = self.analyser.get_checksums(
+        file_data['sha1'], file_data['sha512'] = self.analyser.get_checksums(
             file_)
         file_data['extension'] = (file_data['file_name'].split('.')[-1]
                                   if '.' in file_data['file_name'] else '')
