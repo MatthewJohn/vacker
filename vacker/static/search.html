@@ -60,7 +60,18 @@
     }
 
     $(document).ready(function(){
-      performSearch();
+      //performSearch();
+      $('#resultTable').DataTable({
+        "ajax": {
+          "dataSrc": ""
+        },
+        "columns": [
+          { "data": "file_name" },
+          { "data": "directory" },
+          { "data": "mime_type" },
+          { "data": "size" }
+        ]
+      });
     });
   </script>
 
@@ -187,13 +198,14 @@
             Data Table Example</div>
           <div class="card-body">
             <div class="table-responsive">
-              <table class="table table-bordered" data-url='/search/photo' id="resultTable" width="100%" cellspacing="0">
+              <table  class="table table-bordered" data-url='/search/photo' id="resultTable" width="100%" cellspacing="0">
+
                 <thead>
                   <tr>
-                    <th data-field="file_name">Name</th>
-                    <th data-field="directory">Path</th>
-                    <th data-field="mime/type">Type</th>
-                    <th data-field="size">Size</th>
+                    <th>Name</th>
+                    <th>Path</th>
+                    <th>Type</th>
+                    <th>Size</th>
                   </tr>
                 </thead>
 

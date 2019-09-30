@@ -43,3 +43,16 @@ class FileFactory(object):
         analyser = vacker.analyser.Analyser()
         media_object = self.get_file_by_path(file_path)
         return analyser.get_checksums(file_path) == media_object.get_checksums()
+
+    def query_files(self, query_values):
+        outer_query_strings = []
+        for query_value in query_values.split(' '):
+
+            fields = ['file_name', 'size', 'path', 'extension', 'mime_type']
+            query_string = ''
+            query_fields = []
+            for field in fields:
+                query_fields.append(field + ': *{query_value}*')
+            outer_query_strings.append('(' + ' OR '.join(query_fields).format(query_value=query_value) + ')')
+        return vacker.database.Database.get_database().search(' AND '.join(outer_query_strings))
+
