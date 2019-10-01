@@ -24,19 +24,68 @@
       <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
   </fieldType>
-
+  <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100" multiValued="true">
+    <analyzer type="index">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true"/>
+      <filter class="solr.SynonymGraphFilterFactory" expand="true" ignoreCase="true" synonyms="synonyms.txt"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
   <field name="_nest_path_" type="_nest_path_"/>
   <field name="_root_" type="string" docValues="false" indexed="true" stored="false"/>
   <field name="_text_" type="text_general" multiValued="true" indexed="true" stored="false"/>
   <field name="_version_" type="plong" indexed="false" stored="false"/>
-  <field name="content" type="lc_text"/>
-  <field name="directory" type="lc_text"/>
-  <field name="extension" type="lc_text"/>
-  <field name="file_name" type="lc_text" />
+
+  <!-- General file -->
+  <field name="g_directory" type="lc_text"/>
+  <field name="g_file_modified" type="pdate"/>
+  <field name="g_extension" type="lc_text"/>
+  <field name="g_file_name" type="lc_text" />
   <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
-  <field name="mime_type" type="lc_text"/>
-  <field name="path" type="lc_text"/>
-  <field name="sha1" type="lc_text"/>
-  <field name="sha512" type="lc_text"/>
-  <field name="size" type="pint" uninvertible="false" docValues="false" indexed="true" stored="true"/>
+  <field name="g_mime_type" type="lc_text"/>
+  <field name="g_path" type="lc_text"/>
+  <field name="g_sha1" type="lc_text"/>
+  <field name="g_sha512" type="lc_text"/>
+  <field name="g_size" type="pint" uninvertible="false" docValues="false" indexed="true" stored="true"/>
+
+  <!-- Plain file specific -->
+  <field name="content" type="lc_text"/>
+
+  <!-- Photo/Video specific -->
+  <field name="pv_width" type="pint"/>
+  <field name="pv_height" type="pint"/>
+  <field name="pv_orientation" type="pint" indexed="false"/>
+  <field name="pv_date_taken" type="pdate"/>
+
+  <!-- Image specific -->
+  <field name="i_type" type="lc_text" indexed="false"/>
+  <field name="i_camera_brand" type="lc_text"/>
+  <field name="i_camera_model" type="lc_text"/>
+  <field name="i_exposure" type="lc_text"/>
+  <field name="i_iso" type="lc_text"/>
+  <field name="i_aperature" type="lc_text"/>
+  <field name="i_focal_length" type="lc_text"/>
+  <field name="i_flash" type="lc_text"/>
+
+  <!-- Video specific -->
+  <field name="v_frame_rate" type="pint" indexed="false"/>
+  <field name="v_length" type="pint" indexed="false"/>
+  <field name="v_codec" type="lc_text" indexed="false"/>
+  <field name="v_bitrate_rate" type="pint" indexed="false"/>
+  <field name="v_container" type="lc_text" indexed="false"/>
+
+  <!-- Audio specific -->
+  <field name="a_sample_rate" type="pint" indexed="false"/>
+  <field name="a_bitrate_rate" type="pint" indexed="false"/>
+  <field name="a_channels" type="pint" indexed="false"/>
+
+
+  <!-- Location specific -->
 </schema>
