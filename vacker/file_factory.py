@@ -13,7 +13,7 @@ class FileFactory(object):
 
     def get_file_by_path(self, path):
         db_connection = vacker.database.Database.get_database()
-        results = db_connection.search('path: "{0}"'.format(path))
+        results = db_connection.search('g_path: "{0}"'.format(path))
         for res in results:
             return self.get_file_by_document(res)
         return None
@@ -33,7 +33,7 @@ class FileFactory(object):
 
     def get_file_by_checksum(self, sha1, sha512):
         db_connection = vacker.database.Database.get_database()
-        reuslts = db_connection.search('sha512: {sha512} AND sha1: {sha1}'.format(
+        reuslts = db_connection.search('g_sha512: {sha512} AND g_sha1: {sha1}'.format(
             sha1=sha1, sha512=sha512))
         for res in reuslts:
             return self.get_file_by_document(res)
@@ -48,7 +48,7 @@ class FileFactory(object):
         outer_query_strings = []
         for query_value in query_values.split(' '):
 
-            fields = ['file_name', 'size', 'path', 'extension', 'mime_type']
+            fields = ['g_file_name', 'g_size', 'g_path', 'g_extension', 'g_mime_type']
             query_string = ''
             query_fields = []
             for field in fields:

@@ -10,18 +10,6 @@ from vacker.media import File
 
 class Media(File):
     
-    def get_date(self):
-        return self._document.get('datetime', None)
-
-    def get_orientation(self):
-        return self._document.get('orientation', 0)
-
-    def get_backup_state(self):
-        return self._document['backup']
-
-    def get_hidden_state(self):
-        return self._document['hide']
-
     def update_sets(self):
         if not self.get_date():
             return
@@ -58,22 +46,3 @@ class Media(File):
         database_connection.media.update({'set_id': {'$in': events}},
                                          {'$set': {'event_id': event_id}}, multi=True)
 
-    def toggle_backup(self):
-        database_connection = vacker.database.Database.get_database()
-        current_backup_state = self.get_backup_state()
-        database_connection.media.update({'_id': ObjectId(self.get_id())}, {'$set': {'backup': (not current_backup_state)}})
-        return True
-
-    def toggle_hide(self):
-        database_connection = vacker.database.Database.get_database()
-        current_hidden_state = self.get_hidden_state()
-        database_connection.media.update({'_id': ObjectId(self.get_id())}, {'$set': {'hide': (not current_hidden_state)}})
-        return True
-
-    def get_details(self):
-        return {
-            'orientation': self.get_orientation(),
-            'backup_state': 2 if self.get_backup_state() else 0,
-            'hidden_state': 2 if self.get_hidden_state() else 0,
-            'datetime': self.get_date().strftime('%a %d %b %H:%M:%S')
-        }
