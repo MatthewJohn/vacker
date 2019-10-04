@@ -61,17 +61,20 @@
 
     $(document).ready(function(){
       //performSearch();
+      $.fn.dataTable.ext.errMode = 'none';
       $('#resultTable').DataTable({
         "ajax": {
+          "url": "/search/movie",
           "dataSrc": ""
         },
         "columns": [
-          { "data": "file_name" },
-          { "data": "directory" },
-          { "data": "mime_type" },
-          { "data": "size" }
+          { "data": "g_file_name" },
+          { "data": "g_directory" },
+          { "data": "g_mime_type" },
+          { "data": "g_size" }
         ]
       });
+      //$('#resultTable').DataTable().load();
     });
   </script>
 
@@ -89,7 +92,7 @@
     </button>
 
     <!-- Navbar Search -->
-    <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
+    <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0" onsubmit="event.preventDefault(); performSearch();">
       <div class="input-group">
         <input type="text" class="form-control" id="searchQuery" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
         <div class="input-group-append">
