@@ -467,11 +467,11 @@
   <field name="g_extension" type="lc_text"/>
   <field name="g_file_name" type="lc_text" />
   <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
-  <field name="g_mime_type" type="lc_text"/>
+  <field name="g_mime_type" type="lc_text" multiValued="true"/>
   <field name="g_path" type="lc_text"/>
   <field name="g_sha1" type="lc_text"/>
   <field name="g_sha512" type="lc_text"/>
-  <field name="g_size" type="pint" uninvertible="false" docValues="false" indexed="true" stored="true"/>
+  <field name="g_size" type="plong" uninvertible="false" docValues="false" indexed="true" stored="true"/>
 
   <!-- Plain file specific -->
   <field name="content" type="lc_text"/>
