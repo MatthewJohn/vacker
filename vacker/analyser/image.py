@@ -12,11 +12,17 @@ class ImageAnalyser(GeolocationAnalyser):
 
     @staticmethod
     def check_match(file_obj):
-        return file_obj.mime_type[0].split('/')[0] == 'image'
+
+        return file_obj.mime_type[0] and file_obj.mime_type[0].split('/')[0] == 'image'
 
     @classmethod
     def get_file_properties(cls, file_obj):
-        pil_image = PIL.Image.open(file_obj.path)
+        try:
+            pil_image = PIL.Image.open(file_obj.path)
+        except OSError as exc:
+            print(str(exc))
+            return
+
         file_obj.properties['pv_date_taken'] = None
         file_obj.properties['pv_orientation'] = None
         gps_info = {}
