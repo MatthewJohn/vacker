@@ -26,8 +26,11 @@ class FileFactory(object):
     #     return [item for item in res]
 
     def get_file_by_id(self, file_id):
-
-        return vacker.media.File(file_id)
+        db_connection = vacker.database.Database.get_database()
+        results = db_connection.search('id: "{0}"'.format(file_id.replace('"', '')))
+        for res in results:
+            return self.get_file_by_document(res)
+        return None
 
     def get_file_by_document(self, document):
         return vacker.media.File(document['id'], document=document)

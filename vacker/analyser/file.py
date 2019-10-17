@@ -15,7 +15,7 @@ class File(object):
 
     @property
     def additional_files(self):
-        return self._additional_files    
+        return self._additional_files
 
     @property
     def mime_type(self):
