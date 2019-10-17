@@ -1,5 +1,6 @@
 
 import datetime
+import urllib.parse
 
 import vacker.media_collection
 import vacker.database
@@ -44,15 +45,22 @@ class FileFactory(object):
         media_object = self.get_file_by_path(file_path)
         return analyser.get_checksums(file_path) == media_object.get_checksums()
 
-    def query_files(self, query_values):
+    def query_files(self, query_string, start=0, limit=10):
         outer_query_strings = []
-        for query_value in query_values.split(' '):
+        for query_value in query_string.split(' '):
 
             fields = ['g_file_name', 'g_size', 'g_path', 'g_extension', 'g_mime_type']
-            query_string = ''
             query_fields = []
             for field in fields:
                 query_fields.append(field + ': *{query_value}*')
-            outer_query_strings.append('(' + ' OR '.join(query_fields).format(query_value=query_value) + ')')
-        return vacker.database.Database.get_database().search(' AND '.join(outer_query_strings))
+            outer_query_strings.append('(' + ' OR '.join(query_fields).format(query_value=query_value.replace('(', '\(').replace(')', '\)')) + ')')
+
+
+        res = vacker.database.Database.get_database().search(
+            ' AND '.join(outer_query_strings),
+            start=start, rows=limit)
+        return {
+            'total_results': res.hits,
+            'files': res.docs
+        }
 

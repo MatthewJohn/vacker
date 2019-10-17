@@ -26,8 +26,9 @@ class File(object):
 
         return self._mime_type
 
-    def get_file_handle(self):
-        return open(self._path, 'rb')
+    def get_file_handle(self, mode='rb'):
+        fh = open(self._path, mode)
+        return fh
     
     @property
     def path(self):
@@ -44,8 +45,10 @@ class ZippedFile(File):
     def generate_filename(self):
         return '{0}/{1}'.format(self._parent_zip.filename, self._zip_object.filename)
 
-    def get_file_handle(self):
-        return self._parent_zip.open(self._zip_object.filename)
+    def get_file_handle(self, mode='r'):
+        fh = self._parent_zip.open(self._zip_object, mode=mode)
+        fh.name = self._zip_object.filename
+        return fh
 
     @property
     def path(self):

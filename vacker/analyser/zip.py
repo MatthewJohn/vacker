@@ -12,12 +12,16 @@ class ZipAnalyser(BaseAnalyser):
 
     @staticmethod
     def check_match(file_obj):
-        return file_obj.mime_type == 'application/zip'
+        return (
+            file_obj.mime_type == 'application/zip' and
+            file_obj.__class__.__name__ == 'File'
+            )
 
     @classmethod
     def get_file_properties(cls, file_obj):
         try:
-            with zipfile.ZipFile(file_obj.path) as myzip:
+            zip_content = (file_obj.get_file_handle(mode='r') if file_obj.__class__.__name__ == 'ZippedFile' else file_obj.path)
+            with zipfile.ZipFile(zip_content) as myzip:
 
                 for i in myzip.infolist():
                     if not i.is_dir():
@@ -27,3 +31,4 @@ class ZipAnalyser(BaseAnalyser):
 
         except Exception as exc:
             print(exc)
+            raise

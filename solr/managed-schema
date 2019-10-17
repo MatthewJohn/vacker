@@ -462,6 +462,7 @@
   <field name="_version_" type="plong" indexed="false" stored="false"/>
 
   <!-- General file -->
+  <field name="g_file_type" type="lc_text"/>
   <field name="g_directory" type="lc_text"/>
   <field name="g_file_modified" type="pdate"/>
   <field name="g_extension" type="lc_text"/>
