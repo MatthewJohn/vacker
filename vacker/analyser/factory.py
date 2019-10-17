@@ -20,17 +20,17 @@ class Factory(object):
         return Factory.ANALYSIS_CLASSES
 
     @staticmethod
-    def analyse_file(file_path):
-        file_obj = File(file_path)
+    def analyse_file(file_obj):
 
-        cls = BaseAnalyser
-        for cls_itx in Factory.get_analysis_classes(BaseAnalyser):
+        #cls = BaseAnalyser
+        for cls_itx in [BaseAnalyser] + Factory.get_analysis_classes(BaseAnalyser):
             if cls_itx.check_match(file_obj):
-                cls = cls_itx
+                cls_itx.get_file_properties(file_obj)
+                #cls = cls_itx
 
-        for cls_itx in [cls] + [cls_ for cls_ in cls.__bases__]:
-            if cls_itx is object:
-                continue
-            cls_itx.get_file_properties(file_obj)
+        # for cls_itx in [cls] + [cls_ for cls_ in cls.__bases__]:
+        #     if cls_itx is object:
+        #         continue
+        #     cls_itx.get_file_properties(file_obj)
 
-        return file_obj
+        return [file_obj] + file_obj.additional_files

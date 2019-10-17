@@ -27,7 +27,7 @@ class BaseAnalyser(object):
         block_size = 2**20
         sha512 = hashlib.sha512()
         sha1 = hashlib.sha1()
-        with open(file_obj.path, 'rb') as fh_:
+        with file_obj.get_file_handle() as fh_:
             while True:
                 data = fh_.read(block_size)
                 if not data:
@@ -40,8 +40,8 @@ class BaseAnalyser(object):
     def check_match(cls, file_obj):
         """Base method to determine if file is applicable to analyser.
         Only non-inheritted analyser classes should return True."""
-        # Base class is always applicable
+        # Base class is always applicable to standard files
         if cls is BaseAnalyser:
-            return False
+            return file_obj.__class__.__name__ == 'File'
 
         raise NotImplementedError

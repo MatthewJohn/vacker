@@ -6,6 +6,7 @@ import uuid
 
 import vacker.analyser
 import vacker.analyser.factory
+import vacker.analyser.file
 import vacker.file_factory
 import vacker.database
 import vacker.config
@@ -39,6 +40,8 @@ class Importer(object):
         if existing_file and (not verify or self.file_factory.compare_file(file_path)):
             return False
 
-        file_obj = self.analyser_factory.analyse_file(file_path)
-        print(file_obj.properties)
-        self.database.insert_batch(file_obj.properties)
+        file_objs = self.analyser_factory.analyse_file(
+            vacker.analyser.file.File(file_path))
+        for file_obj in file_objs:
+            print(file_obj.properties)
+            #self.database.insert_batch(file_obj.properties)
