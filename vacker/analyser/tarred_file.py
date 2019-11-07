@@ -12,3 +12,6 @@ class TarredFile(BaseAnalyser):
 
         return file_obj.__class__.__name__ == 'TarredFile'
 
+    @classmethod
+    def get_file_properties(cls, file_obj):
+        file_obj.properties['a_parent_archive'] = file_obj._parent_tar.filename

@@ -474,6 +474,9 @@
   <field name="g_sha512" type="lc_text"/>
   <field name="g_size" type="plong" uninvertible="false" docValues="false" indexed="true" stored="true"/>
 
+  <!-- Archive-specific -->
+  <field name="a_parent_archive" type="lc_text" />
+
   <!-- Plain file specific -->
   <field name="content" type="lc_text"/>
 
