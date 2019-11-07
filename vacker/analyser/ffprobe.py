@@ -10,7 +10,19 @@ class FfprobeAnalyser(BaseAnalyser):
     @staticmethod
     def _get_ffprobe_data(file_obj):
         try:
-            return json.loads(subprocess.check_output(['ffprobe', file_obj.path, '-print_format', 'json', '-show_format', '-show_streams']))
+            cmd = ['ffprobe', '-', '-print_format', 'json', '-show_format', '-show_streams']
+            fh = file_obj.get_file_handle()
+            def fileno():
+                return 0
+            setattr(fh, 'fileno', fileno)
+            res = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+            try:
+                res.stdin.write(fh.read())
+            except:
+                pass
+            res.wait()
+            stdout, stderr = res.communicate()
+            return json.loads(stdout)
         except (subprocess.CalledProcessError, ) as exc:
             print('Error during ffprobe: {0}'.format(str(exc)))
             return {}
@@ -20,7 +32,7 @@ class FfprobeAnalyser(BaseAnalyser):
         ffprobe_props = cls._get_ffprobe_data(file_obj)
         analysed_props = {}
 
-        analysed_props['m_length'] = int(float(ffprobe_props['format']['duration']))
+        analysed_props['m_length'] = int(float(ffprobe_props['format'].get('duration', 0))) or None
         analysed_props['v_container'] = ffprobe_props['format']['format_long_name']
 
         for prop, tag in [['m_creation_time', 'creation_time'],
