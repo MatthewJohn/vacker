@@ -41,6 +41,9 @@ class Blob(Resource):
 
     def get(self, file_id):
         file_ = file_factory.get_file_by_id(file_id)
+        parent = file_.get('a_parent_archive')
+        if parent:
+            return send_file(parent)
         return send_file(file_.get_path())
 
 
