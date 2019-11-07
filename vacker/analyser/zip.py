@@ -31,4 +31,3 @@ class ZipAnalyser(BaseAnalyser):
 
         except Exception as exc:
             print(exc)
-            raise

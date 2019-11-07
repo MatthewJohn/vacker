@@ -20,7 +20,7 @@ class FfprobeAnalyser(BaseAnalyser):
         ffprobe_props = cls._get_ffprobe_data(file_obj)
         analysed_props = {}
 
-        analysed_props['length'] = int(float(ffprobe_props['format']['duration']))
+        analysed_props['m_length'] = int(float(ffprobe_props['format']['duration']))
         analysed_props['v_container'] = ffprobe_props['format']['format_long_name']
 
         for prop, tag in [['m_creation_time', 'creation_time'],

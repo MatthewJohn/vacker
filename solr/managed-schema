@@ -508,6 +508,7 @@
 
   <!-- Audio specific -->
   <field name="a_streams" type="pint" indexed="false"/>
+  <field name="a_codec" type="lc_text" indexed="false"/>
   <field name="a_sample_rate" type="pint" indexed="false"/>
   <field name="a_bitrate" type="pint" indexed="false"/>
   <field name="a_channels" type="pint" indexed="false"/>

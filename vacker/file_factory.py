@@ -52,10 +52,12 @@ class FileFactory(object):
         outer_query_strings = []
         for query_value in query_string.split(' '):
 
-            fields = ['g_file_name', 'g_size', 'g_path', 'g_extension', 'g_mime_type']
+            fields = ['g_file_name', 'g_size', 'g_path', 'g_extension', 'g_mime_type', 'a_artist', 'm_title', 'a_album']
+            #fields = ['*']
             query_fields = []
             for field in fields:
-                query_fields.append(field + ': *{query_value}*')
+                query_fields.append(field + ':*{query_value}*')
+                #query_fields.append('*{query_value}*')
             outer_query_strings.append('(' + ' OR '.join(query_fields).format(query_value=query_value.replace('(', '\(').replace(')', '\)')) + ')')
 
 
