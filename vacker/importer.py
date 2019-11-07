@@ -44,4 +44,4 @@ class Importer(object):
             vacker.analyser.file.File(file_path))
         for file_obj in file_objs:
             print(file_obj.properties)
-            self.database.insert_batch(file_obj.properties)
+            #self.database.insert_batch(file_obj.properties)

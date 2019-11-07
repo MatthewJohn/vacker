@@ -13,7 +13,7 @@ class ImageAnalyser(GeolocationAnalyser):
     @staticmethod
     def check_match(file_obj):
 
-        return file_obj.mime_type[0] and file_obj.mime_type[0].split('/')[0] == 'image'
+        return file_obj.mime_type and file_obj.mime_type.split('/')[0] == 'image'
 
     @classmethod
     def get_file_properties(cls, file_obj):

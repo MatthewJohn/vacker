@@ -1,7 +1,7 @@
 
 from vacker.analyser.base import BaseAnalyser
-#from vacker.analyser.media import MediaAnalyser
-#from vacker.analyser.video import VideoAnalyser
+from vacker.analyser.audio import AudioAnalyser
+from vacker.analyser.video import VideoAnalyser
 from vacker.analyser.image import ImageAnalyser
 from vacker.analyser.geolocation import GeolocationAnalyser
 #from vacker.analyser.text import TextAnalyser

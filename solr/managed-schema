@@ -493,16 +493,20 @@
   <field name="i_focal_length" type="lc_text"/>
   <field name="i_flash" type="lc_text"/>
 
+  <!-- Media-specific -->
+  <field name="m_length" type="pint" indexed="false"/>
+
   <!-- Video specific -->
+  <field name="v_streams" type="pint" indexed="false"/>
   <field name="v_frame_rate" type="pint" indexed="false"/>
-  <field name="v_length" type="pint" indexed="false"/>
   <field name="v_codec" type="lc_text" indexed="false"/>
-  <field name="v_bitrate_rate" type="pint" indexed="false"/>
+  <field name="v_bitrate" type="pint" indexed="false"/>
   <field name="v_container" type="lc_text" indexed="false"/>
 
   <!-- Audio specific -->
+  <field name="a_streams" type="pint" indexed="false"/>
   <field name="a_sample_rate" type="pint" indexed="false"/>
-  <field name="a_bitrate_rate" type="pint" indexed="false"/>
+  <field name="a_bitrate" type="pint" indexed="false"/>
   <field name="a_channels" type="pint" indexed="false"/>
 
 
