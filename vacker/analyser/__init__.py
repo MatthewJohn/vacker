@@ -9,3 +9,5 @@ from vacker.analyser.geolocation import GeolocationAnalyser
 #from vacker.analyser.word import WordAnalyser
 from vacker.analyser.zip import ZipAnalyser
 from vacker.analyser.zipped_file import ZippedFile
+from vacker.analyser.tar import TarAnalyser
+from vacker.analyser.tarred_file import TarredFile

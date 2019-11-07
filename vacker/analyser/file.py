@@ -51,14 +51,35 @@ class ZippedFile(File):
         return fh
 
     @property
-    def path(self):
-        return self._path
-
-    @property
     def parent_zip(self):
         return self._parent_zip
 
     @property
     def zip_object(self):
         return self._zip_object
+
+
+class TarredFile(File):
+
+    def __init__(self, parent_tar, tar_object):
+        self._parent_tar = parent_tar
+        self._tar_object = tar_object
+        super(TarredFile, self).__init__(self.generate_filename())
+
+    def generate_filename(self):
+        return '{0}/{1}'.format(self._parent_tar.filename, self._tar_object.name)
+
+    def get_file_handle(self, mode='r'):
+        fh = self._parent_tar.extractfile(self._tar_object)
+        #fh.name = self._tar_object.name
+        return fh
+
+    @property
+    def parent_tar(self):
+        return self._parent_tar
+
+    @property
+    def tar_object(self):
+        return self._tar_object
+
 
