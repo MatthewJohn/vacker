@@ -17,6 +17,8 @@ class BaseAnalyser(object):
         (file_obj.properties['g_sha1'],
          file_obj.properties['g_sha512']) = cls.get_checksums(file_obj)
 
+        file_obj.properties['g_size'] = file_obj.size
+
         file_obj.properties['g_extension'] = (
             file_obj.properties['g_file_name'].split('.')[-1]
             if '.' in file_obj.properties['g_file_name'] else '')
@@ -58,7 +60,4 @@ class BaseFile(object):
         """Base method to determine if file is applicable to analyser.
         Only non-inheritted analyser classes should return True."""
         # Base class is always applicable to standard files
-        if cls is BaseFile:
-            return file_obj.__class__.__name__ == 'File'
-
-        raise NotImplementedError
+        return file_obj.__class__.__name__ == 'File'

@@ -13,6 +13,3 @@ class ZippedFile(BaseAnalyser):
 
         return file_obj.__class__.__name__ == 'ZippedFile'
 
-    @classmethod
-    def get_file_properties(cls, file_obj):
-        file_obj.properties['g_size'] = int(file_obj.zip_object.file_size)

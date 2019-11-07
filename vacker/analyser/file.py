@@ -1,5 +1,6 @@
 
 import magic
+import os
 
 
 class File(object):
@@ -29,7 +30,12 @@ class File(object):
     def get_file_handle(self, mode='rb'):
         fh = open(self._path, mode)
         return fh
+
+    @property
+    def size(self):
+        return int(os.path.getsize(self.path))
     
+
     @property
     def path(self):
         return self._path
@@ -49,6 +55,10 @@ class ZippedFile(File):
         fh = self._parent_zip.open(self._zip_object, mode=mode)
         fh.name = self._zip_object.filename
         return fh
+
+    @property
+    def size(self):
+        return int(self.zip_object.file_size)
 
     @property
     def parent_zip(self):
@@ -73,6 +83,10 @@ class TarredFile(File):
         fh = self._parent_tar.extractfile(self._tar_object)
         #fh.name = self._tar_object.name
         return fh
+
+    @property
+    def size(self):
+        return self.tar_object.size
 
     @property
     def parent_tar(self):
