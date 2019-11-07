@@ -495,6 +495,9 @@
 
   <!-- Media-specific -->
   <field name="m_length" type="pint" indexed="false"/>
+  <field name="m_creation_time" type="pdate" />
+  <field name="m_title" type="lc_text" />
+  <field name="m_comment" type="lc_text" />
 
   <!-- Video specific -->
   <field name="v_streams" type="pint" indexed="false"/>
@@ -508,6 +511,10 @@
   <field name="a_sample_rate" type="pint" indexed="false"/>
   <field name="a_bitrate" type="pint" indexed="false"/>
   <field name="a_channels" type="pint" indexed="false"/>
+  <field name="a_artist" type="lc_text" />
+  <field name="a_track" type="lc_text" />
+  <field name="a_album" type="lc_text" />
+  <field name="a_album_artist" type="lc_text" />
 
 
   <!-- Location specific -->

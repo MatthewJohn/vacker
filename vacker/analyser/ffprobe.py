@@ -23,6 +23,16 @@ class FfprobeAnalyser(BaseAnalyser):
         analysed_props['length'] = int(float(ffprobe_props['format']['duration']))
         analysed_props['v_container'] = ffprobe_props['format']['format_long_name']
 
+        for prop, tag in [['m_creation_time', 'creation_time'],
+                          ['m_title', 'title'],
+                          ['m_comment', 'comment'],
+                          ['a_artist', 'artist'],
+                          ['a_track', 'track'],
+                          ['a_album', 'album'],
+                          ['a_album_artist', 'album_artist']]:
+            if tag in ffprobe_props['format']['tags']:
+                analysed_props[prop] = ffprobe_props['format']['tags'][tag]
+
         v = 0
         a = 0
         for stream in ffprobe_props['streams']:
