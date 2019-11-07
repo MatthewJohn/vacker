@@ -11,7 +11,6 @@ class File(object):
     def __init__(self, file_id, document=None):
         self._id = file_id
         self._document = self._get_document() if document is None else document
-        print(self._document)
 
     def _get_document(self):
         pass
