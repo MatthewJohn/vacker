@@ -73,10 +73,11 @@ class FfprobeAnalyser(BaseAnalyser):
                 # Unrecognised stream
                 continue
 
-            if 'codec_name' in stream:
-                analysed_props['{0}_codec'.format(pref)] = stream['codec_name']
-            if 'bit_rate' in stream:
-                analysed_props['{0}_bitrate'.format(pref)] = stream['bit_rate']
+            if pref:
+                if 'codec_name' in stream:
+                    analysed_props['{0}_codec'.format(pref)] = stream['codec_name']
+                if 'bit_rate' in stream:
+                    analysed_props['{0}_bitrate'.format(pref)] = stream['bit_rate']
 
         return analysed_props, ffprobe_props
 
