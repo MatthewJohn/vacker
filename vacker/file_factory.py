@@ -35,10 +35,10 @@ class FileFactory(object):
     def get_file_by_document(self, document):
         return vacker.media.File(document['id'], document=document)
 
-    def get_file_by_checksum(self, sha1, sha512):
+    def get_file_by_checksum(self, shamean):
         db_connection = vacker.database.Database.get_database()
-        reuslts = db_connection.search('g_sha512: {sha512} AND g_sha1: {sha1}'.format(
-            sha1=sha1, sha512=sha512))
+        reuslts = db_connection.search('g_shamean: {shamean}'.format(
+            shamean=shamean))
         for res in reuslts:
             return self.get_file_by_document(res)
         return None
