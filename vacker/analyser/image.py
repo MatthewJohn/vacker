@@ -44,14 +44,9 @@ class ImageAnalyser(GeolocationAnalyser):
 
                     long_lat = cls._convert_gps_to_lang_lat(gps_info)
 
-                    if 'longitude' in long_lat and 'latitude' in long_lat and False:
-                        file_obj.properties['location'] = {
-                            'type': 'Point',
-                            'coordinates': [
-                                long_lat['longitude'],
-                                long_lat['latitude']
-                            ]
-                        }
+                    if 'longitude' in long_lat and 'latitude' in long_lat:
+                        file_obj.properties['l_lat'] = float(long_lat['latitude'])
+                        file_obj.properties['l_lng'] = float(long_lat['longitude'])
 
                 for datetime_tag in ['DateTime',
                                      'DateTimeOriginal',

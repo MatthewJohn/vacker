@@ -481,6 +481,10 @@
   <!-- Plain file specific -->
   <field name="content" type="lc_text"/>
 
+  <!-- Location specific -->
+  <field name="l_lat" type="pfloat" />
+  <field name="l_lng" type="pfloat" />
+
   <!-- Photo/Video specific -->
   <field name="pv_width" type="pint"/>
   <field name="pv_height" type="pint"/>
