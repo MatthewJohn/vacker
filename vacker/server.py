@@ -25,10 +25,13 @@ class Stats(Resource):
 class Search(Resource):
 
     def get(self):
+        order_column = request.args.get('order[0][column]', None)
         res = file_factory.query_files(
             query_string=request.args.get('search[value]', ''),
             start=request.args.get('start', 0),
-            limit=request.args.get('length', 10))
+            limit=request.args.get('length', 10),
+            sort=(request.args.get('columns[' + order_column + '][data]', None) if order_column else None),
+            sort_dir=request.args.get('order[0][dir]', None))
         for file_ in res['files']:
             file_['g_file_name'] = '<a href="/blob/{0}" target="_blankn">{1}</a>'.format(urllib.parse.quote(file_['id']), file_['g_file_name'])
         return {
