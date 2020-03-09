@@ -28,7 +28,7 @@ class File(object):
         if self._mime_type is None:
             with magic.Magic(flags=magic.MAGIC_MIME_TYPE) as m:
                 with self.get_file_handle() as fh:
-                    self._mime_type = m.id_buffer(fh.read())
+                    self._mime_type = m.id_buffer(fh.read(8 * 8))
 
         return self._mime_type
 
