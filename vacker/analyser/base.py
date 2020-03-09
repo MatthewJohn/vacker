@@ -5,7 +5,7 @@ import subprocess
 
 class BaseAnalyser(object):
 
-    SHAMEAN_BIN = '/home/matthew/Downloads/shamean'
+    SHAMEAN_BIN = '/home/matthew/w/g/shamean/shamean'
 
     @classmethod
     def get_file_properties(cls, file_obj):
@@ -16,7 +16,7 @@ class BaseAnalyser(object):
         file_obj.properties['g_mime_type'] = file_obj.mime_type
         file_obj.properties['g_file_type'] = file_obj.__class__.__name__
 
-        file_obj.properties['g_shamean'] = cls.get_shamean(file_obj)
+        file_obj.properties['g_shamean'] = cls.get_shamean(file_obj) if not file_obj.is_virtual else None
 
         file_obj.properties['g_size'] = file_obj.size
 

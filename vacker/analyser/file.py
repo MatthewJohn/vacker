@@ -5,6 +5,11 @@ import os
 
 class File(object):
 
+    @property
+    def is_virtual(self):
+        """Is the file virtual..."""
+        return False
+
     def __init__(self, path):
         self._path = path
         self._mime_type = None
@@ -41,7 +46,14 @@ class File(object):
         return self._path
 
 
-class ZippedFile(File):
+class VirtualFile(File):
+
+    @property
+    def is_virtual(self):
+        return True
+
+
+class ZippedFile(VirtualFile):
 
     def __init__(self, parent_zip, zip_object):
         self._parent_zip = parent_zip
@@ -69,7 +81,7 @@ class ZippedFile(File):
         return self._zip_object
 
 
-class TarredFile(File):
+class TarredFile(VirtualFile):
 
     def __init__(self, parent_tar, tar_object):
         self._parent_tar = parent_tar
