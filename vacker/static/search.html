@@ -16,7 +16,8 @@
 
 
     <!-- Page level plugin CSS-->
-  <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+  <!--<link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">-->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/b-1.6.1/b-colvis-1.6.1/r-2.2.3/sc-2.0.1/sl-1.3.1/datatables.min.css"/>
 
   <!-- Custom styles for this template-->
   <link href="css/sb-admin.css" rel="stylesheet">
@@ -29,8 +30,9 @@
   <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
 
   <!-- Page level plugin JavaScript-->
-  <script src="vendor/datatables/jquery.dataTables.js"></script>
-  <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
+  <!--<script src="vendor/datatables/jquery.dataTables.js"></script>-->
+ 
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.20/b-1.6.1/b-colvis-1.6.1/r-2.2.3/sc-2.0.1/sl-1.3.1/datatables.min.js"></script>
 
   <!-- Custom scripts for all pages-->
   <script src="js/sb-admin.min.js"></script>
@@ -67,6 +69,7 @@
           "url": "/search",
           //"dataSrc": ""
         },
+        buttons: ["colvis"],
         serverSide: true,
         // ajax: function ( data, callback, settings ) {
         //     console.log(data);
