@@ -1,3 +1,7 @@
+# NOTE
+
+This repo is a mirror of phabricator DockStudios. Do not make any changes outside of this.
+
 # Quick start
 
     # Install mongo server and python pip
