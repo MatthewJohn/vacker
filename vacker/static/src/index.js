@@ -3,24 +3,15 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import rootReducer from  './reducer'
 
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
-import thunkMiddleware from 'redux-thunk';
-import { createLogger } from 'redux-logger';
-
-const rootReducer = combineReducers({
-
-});
-
-const loggerMiddleware = createLogger();
 
 export const store = createStore(
     rootReducer,
-    applyMiddleware(
-        thunkMiddleware,
-        loggerMiddleware
-    )
+    window.__REDUX_DEVTOOLS_EXTENSION__ && 
+   window.__REDUX_DEVTOOLS_EXTENSION__()
 );
 
 ReactDOM.render(

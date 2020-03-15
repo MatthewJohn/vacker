@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Router, Route } from 'react-router-dom';
-//import { connect } from 'react-redux';
+import { connect } from 'react-redux'
 import { createBrowserHistory } from 'history';
 
 import {DataTable} from 'primereact/datatable';
@@ -15,72 +15,71 @@ import './App.css';
 
 const history = createBrowserHistory();
 
-// var state = {
-//   searchValue: '',
-//   enabled_columns: ['columnn', 'column2']
-// }
 
-var state_mapper = {};
-
-function getStateValue(key) {
-  return state_mapper[key]['getter'];
-}
-
-function setStateValue(key, value) {
-  state_mapper[key]['setter'](value);
-  // state[key] = value;
-}
+const mapStateToProps = (state) => {
+   return {
+      search_string: state.search_string,
+      results: state.results
+   };
+};
+const mapDispatchToProps = (dispatch) => {
+   return {
+      update_search_results: (res) => dispatch({action: 'UPDATE_RESULTS', value: res}),
+      update_search_string: (val) => dispatch({action: 'UPDATE_SEARCH', value: val}),
+   };
+};
 
 
-// function performSearch(search_value) {
-    
-// }
+class SearchBarBare extends React.Component {
 
-function onSearchChange(ev, force=false) {
-  setStateValue('search_value', ev.target.value);
-  if (ev.target.value.length >= 3 || force) {
-    performSearch();
-    console.log(ev.target.value);
+  constructor(props) {
+    super(props);
+    this.onSearchChange = this.onSearchChange.bind(this);
+    this.performSearch = this.performSearch.bind(this);
   }
-}
-
-function performSearch() {
-  console.log('searching for ' + getStateValue('search_value'));
-  history.push("/search/" + getStateValue('search_value'));
-
-  fetch('http://localhost:5000/search?query_string=' + getStateValue('search_value'))
-    .then(response => response.json())
-    .then(data => setStateValue('results', data['data']));
-}
-
-
-
-
-class SearchBar extends React.Component {
 
   onKeyDown = (e) => {
     if (e.key === 'Enter') {
-      onSearchChange(e, true);
+      this.onSearchChange(e, true);
     }
   }
 
+  onSearchChange(ev, force=false) {
+    this.props.update_search_string(ev.target.value);
+    if (ev.target.value.length >= 3 || force) {
+      this.performSearch();
+      console.log(ev.target.value);
+    }
+  }
+
+  performSearch() {
+    console.log('searching for ' + this.props.search_value);
+    history.push("/search/" + this.props.search_value);
+
+    fetch('http://localhost:5000/search?query_string=' + this.props.search_value)
+      .then(response => response.json())
+      .then(data => this.props.update_search_results(data['data']));
+  }
+
   onChange = (ev) => {
-    onSearchChange(ev);
+    this.onSearchChange(ev);
   }
 
   render() {
     return (<input type="text"
                    name="search_value"
-                   value={getStateValue['search_value']}
+                   value={this.props.search_value}
                    onKeyDown={this.onKeyDown}
                    onChange={this.onChange} />);
   }
 }
 
+const SearchBar = connect(mapStateToProps, mapDispatchToProps)(SearchBarBare);
 
 
 
-class ResultTable extends React.Component {
+
+class ResultTableBare extends React.Component {
 
   constructor(props) {
     super(props);
@@ -88,7 +87,7 @@ class ResultTable extends React.Component {
     this.onVirtualScroll = this.onVirtualScroll.bind(this);
     this.state = {
       loading: true,
-      results: getStateValue('results'),
+      results: this.props.state.results,
       lazyTotalRecords: 20
     }
   }
@@ -123,7 +122,7 @@ class ResultTable extends React.Component {
       console.log(length);
         let chunk = [];
         for (let i = 0; i < length; i++) {
-            chunk[i] = {...getStateValue('results')[i], ...{vin: (index + i)}};
+            chunk[i] = {...this.props.state.results[i], ...{vin: (index + i)}};
         }
 
         return chunk;
@@ -184,6 +183,8 @@ class ResultTable extends React.Component {
 
 }
 
+const ResultTable = connect(mapStateToProps, mapDispatchToProps)(ResultTableBare);
+
 
 
 
@@ -197,15 +198,11 @@ class HomePage extends React.Component {
 
 
 
-class SearchPage extends React.Component {
+class SearchPageBare extends React.Component {
 
   constructor(props) {
     super(props);
-    setStateValue('search_value', this.props.match.params.search_value);
-  }
-
-  copmonentDidMount() {
-    performSearch(this.props.match.params.search_value);
+    this.props.update_search_string(this.props.match.params.search_value);
   }
 
   render() {
@@ -216,6 +213,8 @@ class SearchPage extends React.Component {
       </div>);
   }
 }
+
+const SearchPage = connect(mapStateToProps, mapDispatchToProps)(SearchPageBare);
 
 
 
@@ -228,7 +227,7 @@ class FilePage extends React.Component {
 }
 
 
-class App extends React.Component {
+class AppBare extends React.Component {
     constructor(props) {
         super(props);
 
@@ -253,15 +252,7 @@ class App extends React.Component {
     }
 }
 
-function mapStateToProps(state) {
-    const { alert } = state;
-    return {
-        alert
-    };
-}
-
-//const connectedApp = connect(mapStateToProps)(App);
-//export { connectedApp as App };
+const App = connect(mapStateToProps)(AppBare);
 
 
 export default App;
