@@ -1,5 +1,5 @@
 import React from 'react';
-import { Router, Route } from 'react-router-dom';
+import { Router, Route, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux'
 import { createBrowserHistory } from 'history';
 
@@ -19,18 +19,38 @@ const history = createBrowserHistory();
 const mapStateToProps = (state) => {
    return {
       search_string: state.search_string,
-      results: state.results
+      results: state.results,
+      visible_results: state.visible_results,
+      results_start: state.results_start,
+      results_limit: state.results_limit,
+      file_info: state.file_info,
+      results_total: state.results_total,
+      loading: state.loading
    };
 };
 const mapDispatchToProps = (dispatch) => {
    return {
-      update_search_results: (res) => dispatch({action: 'UPDATE_RESULTS', value: res}),
-      update_search_string: (val) => dispatch({action: 'UPDATE_SEARCH', value: val}),
+      update_search_results: (res, total) => dispatch({
+        type: 'UPDATE_RESULTS', res: res, records_total: total}),
+      update_visible_results: (res, start, limit) => dispatch({
+        type: 'UPDATE_VISIBLE_RESULTS', results: res, start: start, limit: limit}),
+
+      update_search_string: (val) => dispatch({type: 'UPDATE_SEARCH', value: val}),
    };
 };
 
+class FunctionHolder extends React.Component {
+  performSearch = () => {
+    console.log('searching for ' + this.props.search_string);
+    history.push("/search/" + this.props.search_string);
 
-class SearchBarBare extends React.Component {
+    fetch('http://localhost:5000/search?q=' + this.props.search_string)
+      .then(response => response.json())
+      .then(data => this.props.update_search_results(data['data'], data['recordsTotal']));
+  }
+}
+
+class SearchBarBare extends FunctionHolder {
 
   constructor(props) {
     super(props);
@@ -52,23 +72,14 @@ class SearchBarBare extends React.Component {
     }
   }
 
-  performSearch() {
-    console.log('searching for ' + this.props.search_value);
-    history.push("/search/" + this.props.search_value);
-
-    fetch('http://localhost:5000/search?query_string=' + this.props.search_value)
-      .then(response => response.json())
-      .then(data => this.props.update_search_results(data['data']));
-  }
-
   onChange = (ev) => {
     this.onSearchChange(ev);
   }
 
   render() {
     return (<input type="text"
-                   name="search_value"
-                   value={this.props.search_value}
+                   name="search_string"
+                   value={this.props.search_string}
                    onKeyDown={this.onKeyDown}
                    onChange={this.onChange} />);
   }
@@ -79,18 +90,16 @@ const SearchBar = connect(mapStateToProps, mapDispatchToProps)(SearchBarBare);
 
 
 
-class ResultTableBare extends React.Component {
+class ResultTableBare extends FunctionHolder {
 
   constructor(props) {
     super(props);
 
     this.onVirtualScroll = this.onVirtualScroll.bind(this);
-    this.state = {
-      loading: true,
-      results: this.props.state.results,
-      lazyTotalRecords: 20
-    }
+    this.performSearch = this.performSearch.bind(this);
   }
+
+
 
   // getTableHeaders() {
   //   let headers = [];
@@ -122,7 +131,7 @@ class ResultTableBare extends React.Component {
       console.log(length);
         let chunk = [];
         for (let i = 0; i < length; i++) {
-            chunk[i] = {...this.props.state.results[i], ...{vin: (index + i)}};
+            chunk[i] = {...this.props.results[i], ...{vin: (index + i)}};
         }
 
         return chunk;
@@ -132,6 +141,7 @@ class ResultTableBare extends React.Component {
       console.log(event.first);
       console.log(event.rows);
       console.log(event);
+      this.props.update_visible_results(this.props.results, event.first, event.rows);
         //for demo purposes keep loading the same dataset
         //in a real production application, this data should come from server by building the query with LazyLoadEvent options
         setTimeout(() => {
@@ -165,12 +175,12 @@ class ResultTableBare extends React.Component {
                     </div>
                 </div>
 
-                    <DataTable header="VirtualScroll with Lazy Loading" value={this.state.results} scrollable={true} scrollHeight="200px" virtualScroll={true} virtualRowHeight={30}
-                        rows={20} totalRecords={this.state.lazyTotalRecords} lazy={true} onVirtualScroll={this.onVirtualScroll} style={{marginTop:'30px'}} loading={this.state.loading}>
-                        <Column field="vin" header="Vin" loadingBody={this.loadingText} />
-                        <Column field="year" header="Year" loadingBody={this.loadingText} />
-                        <Column field="brand" header="Brand" loadingBody={this.loadingText} />
-                        <Column field="color" header="Color" loadingBody={this.loadingText} />
+                    <DataTable header="VirtualScroll with Lazy Loading" value={this.props.visible_results} scrollable={true} scrollHeight="200px" virtualScroll={true} virtualRowHeight={30}
+                        rows={20} totalRecords={this.props.results_total} lazy={true} onVirtualScroll={this.onVirtualScroll} style={{marginTop:'30px'}} loading={this.props.loading}>
+                        <Column field="g_file_name" header="Filename" loadingBody={this.loadingText} />
+                        <Column field="g_path" header="Path" loadingBody={this.loadingText} />
+                        <Column field="g_size" header="File Size" loadingBody={this.loadingText} />
+                        <Column field="g_file_type" header="Type" loadingBody={this.loadingText} />
                     </DataTable>
             </div>
         );
@@ -202,7 +212,7 @@ class SearchPageBare extends React.Component {
 
   constructor(props) {
     super(props);
-    this.props.update_search_string(this.props.match.params.search_value);
+    this.props.update_search_string(this.props.match.params.search_string);
   }
 
   render() {
@@ -234,6 +244,7 @@ class AppBare extends React.Component {
         const { dispatch } = this.props;
           history.listen((location, action) => {
         });
+
     }
 
 
@@ -244,7 +255,7 @@ class AppBare extends React.Component {
             <Router history={history}>
                 <div>
                     <Route exact path="/" component={HomePage} />
-                    <Route path="/search/:search_value" component={SearchPage} />
+                    <Route path="/search/:search_string" component={SearchPage} />
                     <Route path="/file/:file_id" component={FilePage} />
                 </div>
             </Router>
