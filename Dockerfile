@@ -5,9 +5,9 @@ RUN mkdir /code
 WORKDIR /code
 COPY requirements.txt ./
 RUN pip install -r requirements.txt
+RUN apt-get clean all && apt-get update && apt-get install ffmpeg --assume-yes && rm -rf /var/cache/apt/*
 COPY . ./
 
-RUN apt-get clean all && apt-get update && apt-get install ffmpeg --assume-yes && rm -rf /var/cache/apt/*
 
 COPY shamean /usr/local/bin/
 
