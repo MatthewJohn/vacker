@@ -1,6 +1,5 @@
 
 import datetime
-import urllib.parse
 
 import vacker.media_collection
 import vacker.database

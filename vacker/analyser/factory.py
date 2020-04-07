@@ -7,6 +7,7 @@ class Factory(object):
 
     ANALYSIS_CLASSES = None
 
+    @staticmethod
     def get_analysis_classes(base_cls):
         if Factory.ANALYSIS_CLASSES is None:
             classes = []
