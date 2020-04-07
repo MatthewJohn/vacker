@@ -7,7 +7,7 @@ from vacker.config import Config
 
 class Database(object):
 
-    MAX_BATCH_SIZE = 1
+    MAX_BATCH_SIZE = 500
     _CONNECTION = None
     _BATCH = []
 
