@@ -42,7 +42,7 @@ class FfprobeAnalyser(BaseAnalyser):
                           ['a_track', 'track'],
                           ['a_album', 'album'],
                           ['a_album_artist', 'album_artist']]:
-            if tag in ffprobe_props['format']['tags']:
+            if 'format' in ffprobe_props and 'tags' in ffprobe_props['format'] and tag in ffprobe_props['format']['tags']:
                 analysed_props[prop] = ffprobe_props['format']['tags'][tag]
 
         v = 0
