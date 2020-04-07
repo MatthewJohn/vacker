@@ -1,5 +1,7 @@
 
 import datetime
+import shlex
+import sys
 
 import vacker.media_collection
 import vacker.database
@@ -49,13 +51,17 @@ class FileFactory(object):
 
     def query_files(self, query_string, start=0, limit=10, sort=None, sort_dir='desc'):
         outer_query_strings = []
-        for query_value in query_string.split(' '):
+        for query_value in shlex.split(query_string):
 
             fields = ['g_file_name', 'g_size', 'g_path', 'g_extension', 'g_mime_type', 'a_artist', 'm_title', 'a_album']
             #fields = ['*']
             query_fields = []
             for field in fields:
-                query_fields.append(field + ':*{query_value}*')
+                if ' ' in query_value:
+                    if field in ['g_file_name', 'g_path', 'a_artist', 'm_title', 'a_album']:
+                        query_fields.append(field + ':"*{query_value}*"')
+                else:
+                    query_fields.append(field + ':*{query_value}*')
                 #query_fields.append('*{query_value}*')
             outer_query_strings.append('(' + ' OR '.join(query_fields).format(query_value=query_value.replace('(', '\(').replace(')', '\)')) + ')')
 
@@ -65,8 +71,9 @@ class FileFactory(object):
         }
         if sort:
             kwargs['sort'] = '{0} {1}'.format(sort, sort_dir)
+        print('{!complexphrase}' + ' AND '.join(outer_query_strings), file=sys.stderr)
         res = vacker.database.Database.get_database().search(
-            ' AND '.join(outer_query_strings),
+            '{!complexphrase}' + ' AND '.join(outer_query_strings),
             **kwargs
             )
         return {
