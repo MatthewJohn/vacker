@@ -12,14 +12,15 @@ class ImageAnalyser(GeolocationAnalyser):
 
     @staticmethod
     def check_match(file_obj):
-
-        return file_obj.mime_type and file_obj.mime_type.split('/')[0] == 'image'
+        return (file_obj.mime_type and
+                file_obj.mime_type.split('/')[0] == 'image' and
+                file_obj.__class__.__name__ not in ['ZippedFile', 'TarredFile'])
 
     @classmethod
     def get_file_properties(cls, file_obj):
         try:
             pil_image = PIL.Image.open(file_obj.path)
-        except OSError as exc:
+        except (OSError, ValueError) as exc:
             print(str(exc))
             return
 
