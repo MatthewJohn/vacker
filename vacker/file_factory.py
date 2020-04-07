@@ -50,30 +50,34 @@ class FileFactory(object):
         return analyser.get_checksums(file_path) == media_object.get_checksums()
 
     def query_files(self, query_string, start=0, limit=10, sort=None, sort_dir='desc'):
-        outer_query_strings = []
+        outer_query_string = ''
+        use_combiner = False
         for query_value in shlex.split(query_string):
 
-            fields = ['g_file_name', 'g_size', 'g_path', 'g_extension', 'g_mime_type', 'a_artist', 'm_title', 'a_album']
-            #fields = ['*']
-            query_fields = []
-            for field in fields:
+            value_query = ''
+            if query_value in ['!', 'AND', 'NOT', 'OR']:
+                outer_query_string += ' ' + query_value
+                use_combiner = False
+            else:
                 if ' ' in query_value:
-                    if field in ['g_file_name', 'g_path', 'a_artist', 'm_title', 'a_album']:
-                        query_fields.append(field + ':"*{query_value}*"')
+                    value_query = '"{query_value}"'
                 else:
-                    query_fields.append(field + ':*{query_value}*')
-                #query_fields.append('*{query_value}*')
-            outer_query_strings.append('(' + ' OR '.join(query_fields).format(query_value=query_value.replace('(', '\(').replace(')', '\)')) + ')')
+                    value_query = '{query_value}'
+                if use_combiner:
+                    outer_query_string += ' AND'
+                use_combiner = True
+                outer_query_string += ' ' + value_query.format(query_value=query_value.replace('(', '\(').replace(')', '\)'))
 
         kwargs = {
             'start': start,
-            'rows': limit
+            'rows': limit,
+            'df': 'text'
         }
         if sort:
             kwargs['sort'] = '{0} {1}'.format(sort, sort_dir)
-        print('{!complexphrase}' + ' AND '.join(outer_query_strings), file=sys.stderr)
+        print(outer_query_string, file=sys.stderr)
         res = vacker.database.Database.get_database().search(
-            '{!complexphrase}' + ' AND '.join(outer_query_strings),
+            outer_query_string,
             **kwargs
             )
         return {

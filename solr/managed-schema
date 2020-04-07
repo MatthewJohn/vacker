@@ -456,6 +456,7 @@
       <filter class="solr.LowerCaseFilterFactory"/>
     </analyzer>
   </fieldType>
+  <field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/>
   <field name="_nest_path_" type="_nest_path_"/>
   <field name="_root_" type="string" docValues="false" indexed="true" stored="false"/>
   <field name="_text_" type="text_general" multiValued="true" indexed="true" stored="false"/>
@@ -525,6 +526,18 @@
   <field name="a_album" type="lc_text" />
   <field name="a_album_artist" type="lc_text" />
 
+  <copyField source="g_directory" dest="text"/>
+  <copyField source="g_extension" dest="text"/>
+  <copyField source="g_file_name" dest="text"/>
+  <copyField source="g_mime_type" dest="text"/>
+  <copyField source="g_path" dest="text"/>
+  <copyField source="a_parent_archive" dest="text"/>
+  <copyField source="content" dest="text"/>
+  <copyField source="m_comment" dest="text"/>
+  <copyField source="a_artist" dest="text"/>
+  <copyField source="a_track" dest="text"/>
+  <copyField source="a_album" dest="text"/>
+  <copyField source="a_album_artist" dest="text"/>
 
   <!-- Location specific -->
 </schema>
