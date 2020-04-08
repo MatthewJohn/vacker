@@ -2,6 +2,8 @@
 import subprocess
 import json
 
+from datetime import datetime
+
 from vacker.analyser.base import BaseAnalyser
 
 
@@ -36,6 +38,16 @@ class FfprobeAnalyser(BaseAnalyser):
                           ['a_album_artist', 'album_artist']]:
             if 'format' in ffprobe_props and 'tags' in ffprobe_props['format'] and tag in ffprobe_props['format']['tags']:
                 analysed_props[prop] = ffprobe_props['format']['tags'][tag]
+
+        # Attempt to convert m_creation_time to datetime,
+        # otherwise, remove from properties
+        if 'm_creation_time' in analysed_props:
+            try:
+                analysed_props['m_creation_time'] = datetime.strptime(
+                    analysed_props['m_creation_time'],
+                    '%Y:%m:%d %H:%M:%S')
+            except:
+                del analysed_props['m_creation_time']
 
         v = 0
         a = 0
