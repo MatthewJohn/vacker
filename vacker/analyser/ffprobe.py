@@ -31,9 +31,9 @@ class FfprobeAnalyser(BaseAnalyser):
     def _get_ffprobe_analysis(cls, file_obj, audio_only=False):
         ffprobe_props = cls._get_ffprobe_data(file_obj)
         analysed_props = {}
-
-        analysed_props['m_length'] = int(float(ffprobe_props['format'].get('duration', 0))) or None
-        analysed_props['v_container'] = ffprobe_props['format']['format_long_name']
+        format_d = ffprobe_props.get('format', {})
+        analysed_props['m_length'] = int(float(format_d.get('duration', 0))) or None
+        analysed_props['v_container'] = format_d.get('format_long_name', None)
 
         for prop, tag in [['m_creation_time', 'creation_time'],
                           ['m_title', 'title'],
@@ -47,7 +47,7 @@ class FfprobeAnalyser(BaseAnalyser):
 
         v = 0
         a = 0
-        for stream in ffprobe_props['streams']:
+        for stream in ffprobe_props.get('streams', []):
             pref = None
             if stream['codec_type'] == 'video' and not audio_only:
                 # Take audio details from first found video stream (as generally it
