@@ -12,9 +12,15 @@ class TarAnalyser(BaseAnalyser):
 
     @staticmethod
     def check_match(file_obj):
+        is_tar = False
+        try:
+            is_tar = tarfile.is_tarfile(file_obj.path)
+        except:
+            pass
+
         return (
             file_obj.__class__.__name__ == 'File' and
-            tarfile.is_tarfile(file_obj.path)
+            is_tar
             )
 
     @classmethod
