@@ -10,16 +10,8 @@ class FfprobeAnalyser(BaseAnalyser):
     @staticmethod
     def _get_ffprobe_data(file_obj):
         try:
-            cmd = ['ffprobe', '-', '-print_format', 'json', '-show_format', '-show_streams']
-            fh = file_obj.get_file_handle()
-            def fileno():
-                return 0
-            setattr(fh, 'fileno', fileno)
+            cmd = ['ffprobe', file_obj.path, '-print_format', 'json', '-show_format', '-show_streams']
             res = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-            try:
-                res.stdin.write(fh.read())
-            except:
-                pass
             res.wait()
             stdout, stderr = res.communicate()
             return json.loads(stdout)
