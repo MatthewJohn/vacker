@@ -175,6 +175,8 @@ class ResultTableBare extends FunctionHolder {
                             sortField={this.props.results_sort_field}
                             sortOrder={this.props.results_sort_order}
                             onSort={this.onSort}
+                            responsive={true}
+                            resizableColumns={true} columnResizeMode="fit"
                             >
                         <Column field="g_file_name" header="Filename" loadingBody={this.loadingText}  body={this.fileNameFieldTemplate} sortable={true} />
                         <Column field="g_path" header="Path" loadingBody={this.loadingText} sortable={true} />
