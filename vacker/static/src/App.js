@@ -149,6 +149,10 @@ class ResultTableBare extends FunctionHolder {
       this.props.on_sort_change(ev.sortField, ev.sortOrder);
     }
 
+    fileNameFieldTemplate(rowData, column) {
+      return <a target='_blank' href={rowData['blob_url']}>{rowData['g_file_name']}</a>;
+    }
+
     loadingText() {
       return <span className="loading-text"></span>;
     }
@@ -168,9 +172,11 @@ class ResultTableBare extends FunctionHolder {
                             virtualRowHeight={30} rows={50} totalRecords={this.props.results_total}
                             lazy={true} onVirtualScroll={this.onVirtualScroll}
                             style={{marginTop:'30px'}} loading={this.props.loading}
-                            sortField={this.props.results_sort_field} sortOrder={this.props.results_sort_order} onSort={this.onSort}
+                            sortField={this.props.results_sort_field}
+                            sortOrder={this.props.results_sort_order}
+                            onSort={this.onSort}
                             >
-                        <Column field="g_file_name" header="Filename" loadingBody={this.loadingText} sortable={true} />
+                        <Column field="g_file_name" header="Filename" loadingBody={this.loadingText}  body={this.fileNameFieldTemplate} sortable={true} />
                         <Column field="g_path" header="Path" loadingBody={this.loadingText} sortable={true} />
                         <Column field="g_size" header="File Size" loadingBody={this.loadingText} />
                         <Column field="g_file_type" header="Type" loadingBody={this.loadingText} />

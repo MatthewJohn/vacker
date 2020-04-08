@@ -32,7 +32,7 @@ class Search(Resource):
             sort=request.args.get('sort_field', None),
             sort_dir=('asc' if request.args.get('sort_order', '1') == '1' else 'desc'))
         for file_ in res['files']:
-            file_['g_file_name'] = '<a href="/blob/{0}" target="_blankn">{1}</a>'.format(urllib.parse.quote(file_['id']), file_['g_file_name'])
+            file_['blob_url'] = '/blob/' + urllib.parse.quote(file_['id'])
         return {
             'data': [file_ for file_ in res['files']],
             'recordsTotal': res['total_results'],
