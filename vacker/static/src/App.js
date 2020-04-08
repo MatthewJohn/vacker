@@ -177,6 +177,24 @@ class ResultTableBare extends FunctionHolder {
       return <span>{text}</span>;
     }
 
+    videoLengthFieldTemplate(rowData, column) {
+      let total_s = parseInt(rowData['m_length']);
+
+      if (!total_s)
+        return '';
+      let hours = Math.floor(total_s / (60 * 60));
+      let mins = Math.floor(total_s / 60) % 60;
+      let secs = total_s % 60;
+
+      let text = '';
+      if (hours)
+        text = text + ' ' + hours + 'h';
+      if (mins)
+        text = text + ' ' + mins + 'm';
+      text = text + ' ' + secs + 's';
+      return <span>{text}</span>
+    }
+
 
     loadingText() {
       return <span className="loading-text"></span>;
@@ -191,7 +209,8 @@ class ResultTableBare extends FunctionHolder {
     getColumnComponents() {
       let bodyMap = {
         'g_file_name': this.fileNameFieldTemplate,
-        'g_size': this.fileSizeFieldTemplate
+        'g_size': this.fileSizeFieldTemplate,
+        'm_length': this.videoLengthFieldTemplate
       }
       if (this.props.selected_columns)
         return this.props.selected_columns.map(col => {
