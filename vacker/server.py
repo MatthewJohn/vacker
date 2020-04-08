@@ -29,8 +29,8 @@ class Search(Resource):
             query_string=request.args.get('q', ''),
             start=request.args.get('start', 0),
             limit=request.args.get('limit', 10),
-            sort=request.args.get('order_col', None),
-            sort_dir=request.args.get('order_dir', None))
+            sort=request.args.get('sort_field', None),
+            sort_dir=('asc' if request.args.get('sort_order', '1') == '1' else 'desc'))
         for file_ in res['files']:
             file_['g_file_name'] = '<a href="/blob/{0}" target="_blankn">{1}</a>'.format(urllib.parse.quote(file_['id']), file_['g_file_name'])
         return {

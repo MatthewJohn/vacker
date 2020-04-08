@@ -49,7 +49,9 @@ class FileFactory(object):
         media_object = self.get_file_by_path(file_path)
         return analyser.get_checksums(file_path) == media_object.get_checksums()
 
-    def query_files(self, query_string, start=0, limit=10, sort=None, sort_dir='desc'):
+    def query_files(
+            self, query_string, start=0, limit=10,
+            sort=None, sort_dir='desc'):
         outer_query_string = ''
         use_combiner = False
         for query_value in shlex.split(query_string):

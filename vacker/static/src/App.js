@@ -25,6 +25,8 @@ const mapStateToProps = (state) => {
       results_limit: state.results_limit,
       file_info: state.file_info,
       results_total: state.results_total,
+      results_sort_order: state.results_sort_order,
+      results_sort_field: state.results_sort_field,
       loading: state.loading
    };
 };
@@ -41,6 +43,8 @@ const mapDispatchToProps = (dispatch) => {
 
       on_search_string_change: (val) => dispatch({
         type: 'UPDATE_SEARCH_STRING', value: val}),
+      on_sort_change: (field, order) => dispatch({
+        type: 'UPDATE_SORT', field: field, order: order}),
    };
 };
 
@@ -53,7 +57,9 @@ class FunctionHolder extends React.Component {
     fetch('http://localhost:5000/search?' + 
       'q=' + this.props.search_string +
       '&start=' + this.props.results_start +
-      '&limit=' + this.props.results_limit)
+      '&limit=' + this.props.results_limit +
+      '&sort_order=' + this.props.results_sort_order +
+      '&sort_field=' + this.props.results_sort_field)
       .then(response => response.json())
       .then(data => this.props.update_search_results(data['data'], data['recordsTotal']));
   }
@@ -69,7 +75,9 @@ class FunctionHolder extends React.Component {
     if (
         (prevProps.search_string !== this.props.search_string ||
           prevProps.results_limit !== this.props.results_limit ||
-          prevProps.results_start !== this.props.results_start)
+          prevProps.results_start !== this.props.results_start ||
+          prevProps.results_sort_field !== this.props.results_sort_field ||
+          prevProps.results_sort_order !== this.props.results_sort_order)
         && this.props.search_string) {
       this.perform_search_request();
     }
@@ -119,6 +127,7 @@ class ResultTableBare extends FunctionHolder {
     super(props);
 
     this.onVirtualScroll = this.onVirtualScroll.bind(this);
+    this.onSort = this.onSort.bind(this);
   }
   loadChunk(index, length) {
       console.log(index);
@@ -134,6 +143,10 @@ class ResultTableBare extends FunctionHolder {
     onVirtualScroll(event) {
       console.log(event);
       this.props.on_pagination_change(event.first, event.rows);
+    }
+
+    onSort(ev) {
+      this.props.on_sort_change(ev.sortField, ev.sortOrder);
     }
 
     loadingText() {
@@ -154,9 +167,11 @@ class ResultTableBare extends FunctionHolder {
                             scrollable={true} scrollHeight="800px" virtualScroll={true}
                             virtualRowHeight={30} rows={50} totalRecords={this.props.results_total}
                             lazy={true} onVirtualScroll={this.onVirtualScroll}
-                            style={{marginTop:'30px'}} loading={this.props.loading}>
-                        <Column field="g_file_name" header="Filename" loadingBody={this.loadingText} />
-                        <Column field="g_path" header="Path" loadingBody={this.loadingText} />
+                            style={{marginTop:'30px'}} loading={this.props.loading}
+                            sortField={this.props.results_sort_field} sortOrder={this.props.results_sort_order} onSort={this.onSort}
+                            >
+                        <Column field="g_file_name" header="Filename" loadingBody={this.loadingText} sortable={true} />
+                        <Column field="g_path" header="Path" loadingBody={this.loadingText} sortable={true} />
                         <Column field="g_size" header="File Size" loadingBody={this.loadingText} />
                         <Column field="g_file_type" header="Type" loadingBody={this.loadingText} />
                     </DataTable>
