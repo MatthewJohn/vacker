@@ -5,7 +5,7 @@ import subprocess
 
 class BaseAnalyser(object):
 
-    SHAMEAN_BIN = '/home/matthew/w/g/shamean/shamean'
+    SHAMEAN_BIN = '/usr/local/bin/shamean'
 
     @classmethod
     def get_file_properties(cls, file_obj):

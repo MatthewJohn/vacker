@@ -52,4 +52,4 @@ class Blob(Resource):
 # Year API
 api.add_resource(Stats, '/stats/<string:query_string>')
 api.add_resource(Search, '/search')
-api.add_resource(Blob, '/blob/<string:file_id>')
+#api.add_resource(Blob, '/blob/<string:file_id>')

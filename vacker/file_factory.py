@@ -1,6 +1,7 @@
 
 import datetime
-import urllib.parse
+import shlex
+import sys
 
 import vacker.media_collection
 import vacker.database
@@ -49,25 +50,34 @@ class FileFactory(object):
         return analyser.get_checksums(file_path) == media_object.get_checksums()
 
     def query_files(self, query_string, start=0, limit=10, sort=None, sort_dir='desc'):
-        outer_query_strings = []
-        for query_value in query_string.split(' '):
+        outer_query_string = ''
+        use_combiner = False
+        for query_value in shlex.split(query_string):
 
-            fields = ['g_file_name', 'g_size', 'g_path', 'g_extension', 'g_mime_type', 'a_artist', 'm_title', 'a_album']
-            #fields = ['*']
-            query_fields = []
-            for field in fields:
-                query_fields.append(field + ':*{query_value}*')
-                #query_fields.append('*{query_value}*')
-            outer_query_strings.append('(' + ' OR '.join(query_fields).format(query_value=query_value.replace('(', '\(').replace(')', '\)')) + ')')
+            value_query = ''
+            if query_value in ['!', 'AND', 'NOT', 'OR']:
+                outer_query_string += ' ' + query_value
+                use_combiner = False
+            else:
+                if ' ' in query_value:
+                    value_query = '"{query_value}"'
+                else:
+                    value_query = '{query_value}'
+                if use_combiner:
+                    outer_query_string += ' AND'
+                use_combiner = True
+                outer_query_string += ' ' + value_query.format(query_value=query_value.replace('(', '\(').replace(')', '\)'))
 
         kwargs = {
             'start': start,
-            'rows': limit
+            'rows': limit,
+            'df': 'text'
         }
         if sort:
             kwargs['sort'] = '{0} {1}'.format(sort, sort_dir)
+        print(outer_query_string, file=sys.stderr)
         res = vacker.database.Database.get_database().search(
-            ' AND '.join(outer_query_strings),
+            outer_query_string,
             **kwargs
             )
         return {
