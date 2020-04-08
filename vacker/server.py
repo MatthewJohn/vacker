@@ -28,7 +28,7 @@ class Search(Resource):
         res = file_factory.query_files(
             query_string=request.args.get('q', ''),
             start=request.args.get('start', 0),
-            limit=request.args.get('length', 10),
+            limit=request.args.get('limit', 10),
             sort=request.args.get('order_col', None),
             sort_dir=request.args.get('order_dir', None))
         for file_ in res['files']:

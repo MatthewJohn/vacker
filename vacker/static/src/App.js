@@ -30,23 +30,51 @@ const mapStateToProps = (state) => {
 };
 const mapDispatchToProps = (dispatch) => {
    return {
+
       update_search_results: (res, total) => dispatch({
         type: 'UPDATE_RESULTS', res: res, records_total: total}),
-      update_visible_results: (res, start, limit) => dispatch({
-        type: 'UPDATE_VISIBLE_RESULTS', results: res, start: start, limit: limit}),
 
-      update_search_string: (val) => dispatch({type: 'UPDATE_SEARCH', value: val}),
+
+
+      on_pagination_change: (start, limit) => dispatch({
+        type: 'UPDATE_PAGINATION', start: start, limit: limit}),
+
+      on_search_string_change: (val) => dispatch({
+        type: 'UPDATE_SEARCH_STRING', value: val}),
    };
 };
 
 class FunctionHolder extends React.Component {
-  performSearch = () => {
+  perform_search_request = () => {
     console.log('searching for ' + this.props.search_string);
+    console.log('start: ' + this.props.results_start + ', result limit: ' + this.props.results_limit);
     history.push("/search/" + this.props.search_string);
 
-    fetch('http://localhost:5000/search?q=' + this.props.search_string)
+    fetch('http://localhost:5000/search?' + 
+      'q=' + this.props.search_string +
+      '&start=' + this.props.results_start +
+      '&limit=' + this.props.results_limit)
       .then(response => response.json())
       .then(data => this.props.update_search_results(data['data'], data['recordsTotal']));
+  }
+
+  componentDidMount = () => {
+    // On mount, check if search string is available.
+    if (this.props.search_string) {
+      this.perform_search_request();
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (
+        (prevProps.search_string !== this.props.search_string ||
+          prevProps.results_limit !== this.props.results_limit ||
+          prevProps.results_start !== this.props.results_start)
+        && this.props.search_string) {
+      this.perform_search_request();
+    }
+    // Temp hack
+    //else {this.perform_search_request();}
   }
 }
 
@@ -55,21 +83,16 @@ class SearchBarBare extends FunctionHolder {
   constructor(props) {
     super(props);
     this.onSearchChange = this.onSearchChange.bind(this);
-    this.performSearch = this.performSearch.bind(this);
   }
 
   onKeyDown = (e) => {
     if (e.key === 'Enter') {
-      this.onSearchChange(e, true);
+      this.onSearchChange(e);
     }
   }
 
-  onSearchChange(ev, force=false) {
-    this.props.update_search_string(ev.target.value);
-    if (ev.target.value.length >= 3 || force) {
-      this.performSearch();
-      console.log(ev.target.value);
-    }
+  onSearchChange(ev) {
+    this.props.on_search_string_change(ev.target.value);
   }
 
   onChange = (ev) => {
@@ -96,37 +119,8 @@ class ResultTableBare extends FunctionHolder {
     super(props);
 
     this.onVirtualScroll = this.onVirtualScroll.bind(this);
-    this.performSearch = this.performSearch.bind(this);
   }
-
-
-
-  // getTableHeaders() {
-  //   let headers = [];
-  //   getStateValue('enabled_columns').forEach((col) => {
-  //     headers.push(<th>{col}</th>);
-  //   });
-  //   return (
-  //     <thead>
-  //       <tr>
-  //         {headers}
-  //       </tr>
-  //     </thead>
-  //   );
-  // }
-  // render() {
-  //   return (
-  //     <table>
-  //       {this.getTableHeaders()}
-  //     </table>
-  //   );
-  // }
-
-
-
-
-
-    loadChunk(index, length) {
+  loadChunk(index, length) {
       console.log(index);
       console.log(length);
         let chunk = [];
@@ -135,32 +129,15 @@ class ResultTableBare extends FunctionHolder {
         }
 
         return chunk;
-    }
+  }
 
     onVirtualScroll(event) {
-      console.log(event.first);
-      console.log(event.rows);
       console.log(event);
-      this.props.update_visible_results(this.props.results, event.first, event.rows);
-        //for demo purposes keep loading the same dataset
-        //in a real production application, this data should come from server by building the query with LazyLoadEvent options
-        setTimeout(() => {
-            //last chunk
-            if (event.first === 249980) {
-                this.setState({
-                    results: this.loadChunk(event.first, 20)
-                });
-            }
-            else {
-                this.setState({
-                    results: this.loadChunk(event.first, event.rows)
-                });
-            }
-        }, 250);
+      this.props.on_pagination_change(event.first, event.rows);
     }
 
     loadingText() {
-        return <span className="loading-text"></span>;
+      return <span className="loading-text"></span>;
     }
 
     render() {
@@ -169,14 +146,15 @@ class ResultTableBare extends FunctionHolder {
 
                 <div className="content-section introduction">
                     <div className="feature-intro">
-                        <h1>DataTable - Scroll</h1>
-                        <p>Data scrolling with fixed header is available horizontally, vertically or both. ScrollHeight and ScrollWidth values can either be fixed pixels or percentages. Certain columns can be fixed as well.
-                            Virtual Scrolling mode is available to deal with large datasets by loading data on demand during scrolling.</p>
+                        <h1>Results</h1>
                     </div>
                 </div>
 
-                    <DataTable header="VirtualScroll with Lazy Loading" value={this.props.visible_results} scrollable={true} scrollHeight="200px" virtualScroll={true} virtualRowHeight={30}
-                        rows={20} totalRecords={this.props.results_total} lazy={true} onVirtualScroll={this.onVirtualScroll} style={{marginTop:'30px'}} loading={this.props.loading}>
+                    <DataTable value={this.props.results}
+                            scrollable={true} scrollHeight="800px" virtualScroll={true}
+                            virtualRowHeight={30} rows={50} totalRecords={this.props.results_total}
+                            lazy={true} onVirtualScroll={this.onVirtualScroll}
+                            style={{marginTop:'30px'}} loading={this.props.loading}>
                         <Column field="g_file_name" header="Filename" loadingBody={this.loadingText} />
                         <Column field="g_path" header="Path" loadingBody={this.loadingText} />
                         <Column field="g_size" header="File Size" loadingBody={this.loadingText} />
@@ -212,7 +190,7 @@ class SearchPageBare extends React.Component {
 
   constructor(props) {
     super(props);
-    this.props.update_search_string(this.props.match.params.search_string);
+    this.props.on_search_string_change(this.props.match.params.search_string);
   }
 
   render() {
