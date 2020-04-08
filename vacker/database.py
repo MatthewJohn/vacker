@@ -1,6 +1,7 @@
 
 #from pymongo import MongoClient
 import pysolr
+import math
 
 from vacker.config import Config
 
@@ -24,5 +25,6 @@ class Database(object):
             self.complete_batch()
 
     def complete_batch(self):
-        self.get_database().add(Database._BATCH, commit=True)
+        for n in range(math.ceil(len(Database._BATCH) / self.MAX_BATCH_SIZE)):
+            self.get_database().add(Database._BATCH[n * self.MAX_BATCH_SIZE:(n + 1) * self.MAX_BATCH_SIZE], commit=True)
         Database._BATCH = []
