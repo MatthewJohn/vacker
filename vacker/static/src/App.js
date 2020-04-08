@@ -5,6 +5,7 @@ import { createBrowserHistory } from 'history';
 
 import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
+import {MultiSelect} from 'primereact/multiselect';
 
 import 'primereact/resources/themes/nova-light/theme.css';
 import 'primereact/resources/primereact.min.css';
@@ -27,7 +28,10 @@ const mapStateToProps = (state) => {
       results_total: state.results_total,
       results_sort_order: state.results_sort_order,
       results_sort_field: state.results_sort_field,
-      loading: state.loading
+      loading: state.loading,
+      all_columns: state.all_columns,
+      selected_columns: state.selected_columns,
+      column_config: state.column_config
    };
 };
 const mapDispatchToProps = (dispatch) => {
@@ -45,6 +49,9 @@ const mapDispatchToProps = (dispatch) => {
         type: 'UPDATE_SEARCH_STRING', value: val}),
       on_sort_change: (field, order) => dispatch({
         type: 'UPDATE_SORT', field: field, order: order}),
+      on_column_change: (selected_columns) => dispatch({
+        type: 'UPDATE_SELECTED_COLUMNS', selected_columns: selected_columns
+      }),
    };
 };
 
@@ -128,6 +135,8 @@ class ResultTableBare extends FunctionHolder {
 
     this.onVirtualScroll = this.onVirtualScroll.bind(this);
     this.onSort = this.onSort.bind(this);
+    this.onColumnToggle = this.onColumnToggle.bind(this);
+    this.getColumnComponents = this.getColumnComponents.bind(this);
   }
   loadChunk(index, length) {
       console.log(index);
@@ -157,7 +166,34 @@ class ResultTableBare extends FunctionHolder {
       return <span className="loading-text"></span>;
     }
 
+    onColumnToggle(event) {
+      this.props.on_column_change(
+        this.props.all_columns.filter(col => event.value.includes(col))
+      );
+    }
+
+    getColumnComponents() {
+      if (this.props.selected_columns)
+        return this.props.selected_columns.map(col => {
+              return <Column key={col.field} field={col.field} loadingBody={this.loadingText} header={col.header} />;
+          });
+      else
+        return (<Column key="g_file_name" field="g_file_name" loadingBody={this.loadingText} header="g_file_name" />);
+    }
+
     render() {
+
+        const header = (
+            <div style={{textAlign:'left'}}>
+                <MultiSelect value={this.props.selected_columns}
+                             options={this.props.all_columns}
+                             optionLabel="field"
+                             dataKey="field"
+                             onChange={this.onColumnToggle}
+                             style={{width:'250px'}}/>
+            </div>
+        );
+
         return (
             <div>
 
@@ -167,7 +203,8 @@ class ResultTableBare extends FunctionHolder {
                     </div>
                 </div>
 
-                    <DataTable value={this.props.results}
+                    <DataTable
+                            value={this.props.results}
                             scrollable={true} scrollHeight="800px" virtualScroll={true}
                             virtualRowHeight={30} rows={50} totalRecords={this.props.results_total}
                             lazy={true} onVirtualScroll={this.onVirtualScroll}
@@ -177,26 +214,17 @@ class ResultTableBare extends FunctionHolder {
                             onSort={this.onSort}
                             responsive={true}
                             resizableColumns={true} columnResizeMode="fit"
+                            header={header}
                             >
-                        <Column field="g_file_name" header="Filename" loadingBody={this.loadingText}  body={this.fileNameFieldTemplate} sortable={true} />
-                        <Column field="g_path" header="Path" loadingBody={this.loadingText} sortable={true} />
-                        <Column field="g_size" header="File Size" loadingBody={this.loadingText} />
-                        <Column field="g_file_type" header="Type" loadingBody={this.loadingText} />
+                        {this.getColumnComponents()}
                     </DataTable>
             </div>
         );
     }
 
-
-
-
-
-
 }
 
 const ResultTable = connect(mapStateToProps, mapDispatchToProps)(ResultTableBare);
-
-
 
 
 class HomePage extends React.Component {
@@ -205,8 +233,6 @@ class HomePage extends React.Component {
     return (<div><SearchBar /></div>);
   }
 }
-
-
 
 
 class SearchPageBare extends React.Component {
@@ -228,8 +254,6 @@ class SearchPageBare extends React.Component {
 const SearchPage = connect(mapStateToProps, mapDispatchToProps)(SearchPageBare);
 
 
-
-
 class FilePage extends React.Component {
 
   render() {
@@ -247,7 +271,6 @@ class AppBare extends React.Component {
         });
 
     }
-
 
     render() {
         const { alert } = this.props;
