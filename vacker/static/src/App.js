@@ -162,6 +162,22 @@ class ResultTableBare extends FunctionHolder {
       return <a target='_blank' href={rowData['blob_url']}>{rowData['g_file_name']}</a>;
     }
 
+    fileSizeFieldTemplate(rowData, column) {
+      let size_b = parseInt(rowData['g_size']);
+      let text = size_b + 'B';
+      if (size_b > Math.pow(1024, 4))
+        text = (Math.round((size_b / Math.pow(1024, 4)) * 10) / 10) + 'TB';
+      else if (size_b > Math.pow(1024, 3))
+        text = (Math.round((size_b / Math.pow(1024, 3)) * 10) / 10) + 'GB';
+      else if (size_b > Math.pow(1024, 2))
+        text = (Math.round((size_b / Math.pow(1024, 2)) * 10) / 10) + 'MB';
+      else if (size_b > 1024)
+        text = (Math.round((size_b / 1024) * 10) / 10) + 'KB';
+
+      return <span>{text}</span>;
+    }
+
+
     loadingText() {
       return <span className="loading-text"></span>;
     }
@@ -173,9 +189,13 @@ class ResultTableBare extends FunctionHolder {
     }
 
     getColumnComponents() {
+      let bodyMap = {
+        'g_file_name': this.fileNameFieldTemplate,
+        'g_size': this.fileSizeFieldTemplate
+      }
       if (this.props.selected_columns)
         return this.props.selected_columns.map(col => {
-              return <Column key={col.field} field={col.field} loadingBody={this.loadingText} header={col.header} />;
+              return <Column body={bodyMap[col.field]} key={col.field} field={col.field} loadingBody={this.loadingText} sortable={col.sortable} header={col.header} />;
           });
       else
         return (<Column key="g_file_name" field="g_file_name" loadingBody={this.loadingText} header="g_file_name" />);
@@ -187,7 +207,7 @@ class ResultTableBare extends FunctionHolder {
             <div style={{textAlign:'left'}}>
                 <MultiSelect value={this.props.selected_columns}
                              options={this.props.all_columns}
-                             optionLabel="field"
+                             optionLabel="header"
                              dataKey="field"
                              onChange={this.onColumnToggle}
                              style={{width:'250px'}}/>
