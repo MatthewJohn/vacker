@@ -19,14 +19,40 @@ class Importer(object):
         self.file_factory = vacker.file_factory.FileFactory()
         self.database = vacker.database.Database()
 
-    def import_directory(self, directory, verify=False):
+    def import_directory(self, directory, verify=False, skip=None):
         # Walk down each directory, getting all files in each directory
+        dirs_to_skip, files_to_skip = skip.split(',') if skip else (0, 0)
+        dirs_to_skip = int(dirs_to_skip)
+        files_to_skip = int(files_to_skip)
+        skip_dir = 0
+        skip_file = 0
         for root, _, files in os.walk(directory):
-            # Iterate over files and...
+            if dirs_to_skip:
+                skip_dir += 1
+                dirs_to_skip -= 1
+                continue
+
+            # Iterate over files and..i.
             for file in files:
+                if files_to_skip:
+                    skip_file += 1
+                    files_to_skip -= 1
+                    continue
+
                 # Import each one
                 print('Importing ' + file)
-                self.import_file(os.path.join(root, file), verify=verify)
+                try:
+                    self.import_file(os.path.join(root, file), verify=verify)
+                except:
+                    try:
+                        self.database.complete_batch()
+                    except:
+                        print('WARNING: Unable to commit final batch')
+                    print('To continue, use argument --skip=' + str(skip_dir) + ',' + str(skip_file))
+                    raise
+                skip_file += 1
+            skip_file = 0
+            skip_dir += 1
 
         self.database.complete_batch()
 
