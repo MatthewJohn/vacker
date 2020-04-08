@@ -37,3 +37,4 @@ class TarAnalyser(BaseAnalyser):
 
         except Exception as exc:
             print(exc)
+

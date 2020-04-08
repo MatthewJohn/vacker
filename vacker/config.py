@@ -14,7 +14,7 @@ class Config(object):
         # Allow for any variation of 500x500, e.g. 250x1000
         'MINIMUM_RESOLUTION': 250000,
         'THUMBNAIL_DIR': './thumbnails',
-        'SOLR_URL': 'http://localhost:8983/solr/vacker/'
+        'SOLR_URL': 'http://192.168.0.70:8983/solr/vacker/'
     }
 
     @staticmethod

@@ -10,16 +10,8 @@ class FfprobeAnalyser(BaseAnalyser):
     @staticmethod
     def _get_ffprobe_data(file_obj):
         try:
-            cmd = ['ffprobe', '-', '-print_format', 'json', '-show_format', '-show_streams']
-            fh = file_obj.get_file_handle()
-            def fileno():
-                return 0
-            setattr(fh, 'fileno', fileno)
+            cmd = ['ffprobe', file_obj.path, '-print_format', 'json', '-show_format', '-show_streams']
             res = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-            try:
-                res.stdin.write(fh.read())
-            except:
-                pass
             res.wait()
             stdout, stderr = res.communicate()
             return json.loads(stdout)
@@ -31,9 +23,9 @@ class FfprobeAnalyser(BaseAnalyser):
     def _get_ffprobe_analysis(cls, file_obj, audio_only=False):
         ffprobe_props = cls._get_ffprobe_data(file_obj)
         analysed_props = {}
-
-        analysed_props['m_length'] = int(float(ffprobe_props['format'].get('duration', 0))) or None
-        analysed_props['v_container'] = ffprobe_props['format']['format_long_name']
+        format_d = ffprobe_props.get('format', {})
+        analysed_props['m_length'] = int(float(format_d.get('duration', 0))) or None
+        analysed_props['v_container'] = format_d.get('format_long_name', None)
 
         for prop, tag in [['m_creation_time', 'creation_time'],
                           ['m_title', 'title'],
@@ -42,12 +34,12 @@ class FfprobeAnalyser(BaseAnalyser):
                           ['a_track', 'track'],
                           ['a_album', 'album'],
                           ['a_album_artist', 'album_artist']]:
-            if tag in ffprobe_props['format']['tags']:
+            if 'format' in ffprobe_props and 'tags' in ffprobe_props['format'] and tag in ffprobe_props['format']['tags']:
                 analysed_props[prop] = ffprobe_props['format']['tags'][tag]
 
         v = 0
         a = 0
-        for stream in ffprobe_props['streams']:
+        for stream in ffprobe_props.get('streams', []):
             pref = None
             if stream['codec_type'] == 'video' and not audio_only:
                 # Take audio details from first found video stream (as generally it
