@@ -1,5 +1,5 @@
 
-from vacker.analyser.analysers import *
+from vacker.analyser import *
 from vacker.analyser.file import File
 
 
