@@ -8,10 +8,10 @@ class VideoAnalyser(FfprobeAnalyser):
     @staticmethod
     def check_match(file_obj):
         return (
-            not file_obj.is_symlink and
             file_obj.mime_type and
             file_obj.mime_type.split('/')[0] == 'video' and
-            file_obj.__class__.__name__ not in ['ZippedFile', 'TarredFile']
+            file_obj.__class__.__name__ not in ['ZippedFile', 'TarredFile'] and
+            not file_obj.is_symlink
         )
 
     @classmethod

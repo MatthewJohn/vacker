@@ -19,9 +19,9 @@ class TarAnalyser(BaseAnalyser):
             pass
 
         return (
-            not file_obj.is_symlink and
             file_obj.__class__.__name__ == 'File' and
-            is_tar
+            is_tar and
+            not file_obj.is_symlink
         )
 
     @classmethod
