@@ -2,8 +2,8 @@
 from datetime import datetime
 import tarfile
 
-from vacker.analyser.analysers.base import BaseAnalyser
-from vacker.analyser.analysers.factory import Factory
+from vacker.analyser.base import BaseAnalyser
+from vacker.analyser.factory import Factory
 from vacker.analyser.file import TarredFile
 
 

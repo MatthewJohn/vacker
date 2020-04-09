@@ -1,6 +1,6 @@
 
 
-from vacker.analyser.analysers.ffprobe import FfprobeAnalyser
+from vacker.analyser.ffprobe import FfprobeAnalyser
 
 
 class VideoAnalyser(FfprobeAnalyser):

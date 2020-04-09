@@ -4,7 +4,7 @@ import json
 
 from datetime import datetime
 
-from vacker.analyser.analysers.base import BaseAnalyser
+from vacker.analyser.base import BaseAnalyser
 
 
 class FfprobeAnalyser(BaseAnalyser):
