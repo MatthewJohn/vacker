@@ -4,7 +4,7 @@ from datetime import datetime
 import PIL.ExifTags
 import PIL.Image
 
-from vacker.analyser.geolocation import GeolocationAnalyser
+from vacker.analyser.analysers.geolocation import GeolocationAnalyser
 
 
 class ImageAnalyser(GeolocationAnalyser):

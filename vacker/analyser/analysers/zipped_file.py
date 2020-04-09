@@ -2,7 +2,7 @@
 from datetime import datetime
 import uuid
 
-from vacker.analyser.base import BaseAnalyser
+from vacker.analyser.analysers.base import BaseAnalyser
 
 
 class ZippedFile(BaseAnalyser):

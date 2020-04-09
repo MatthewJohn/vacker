@@ -1,6 +1,6 @@
 
 
-from vacker.analyser.ffprobe import FfprobeAnalyser
+from vacker.analyser.analysers.ffprobe import FfprobeAnalyser
 
 
 class AudioAnalyser(FfprobeAnalyser):

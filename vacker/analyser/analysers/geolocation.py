@@ -1,5 +1,5 @@
 
-from vacker.analyser.base import BaseAnalyser
+from vacker.analyser.analysers.base import BaseAnalyser
 
 
 class GeolocationAnalyser(BaseAnalyser):
