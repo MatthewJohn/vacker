@@ -88,4 +88,6 @@ class FfprobeAnalyser(BaseAnalyser):
 
     @classmethod
     def check_match(cls, file_obj):
+        # Never match. This is class is inherited by subclasses
+        # to perform checks.
         return False

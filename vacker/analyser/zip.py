@@ -14,8 +14,9 @@ class ZipAnalyser(BaseAnalyser):
     def check_match(file_obj):
         return (
             file_obj.mime_type == 'application/zip' and
-            file_obj.__class__.__name__ == 'File'
-            )
+            file_obj.__class__.__name__ == 'File' and
+            not file_obj.is_symlink
+        )
 
     @classmethod
     def get_file_properties(cls, file_obj):
