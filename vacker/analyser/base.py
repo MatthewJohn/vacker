@@ -3,6 +3,7 @@ import hashlib
 import uuid
 import subprocess
 
+
 class BaseAnalyser(object):
 
     SHAMEAN_BIN = '/usr/local/bin/shamean'
@@ -16,7 +17,9 @@ class BaseAnalyser(object):
         file_obj.properties['g_mime_type'] = file_obj.mime_type
         file_obj.properties['g_file_type'] = file_obj.__class__.__name__
 
-        file_obj.properties['g_shamean'] = cls.get_shamean(file_obj) if not file_obj.is_virtual else None
+        file_obj.properties['g_shamean'] = (
+            cls.get_shamean(file_obj) if not file_obj.is_virtual else None
+        )
 
         file_obj.properties['g_size'] = file_obj.size
 
@@ -27,7 +30,8 @@ class BaseAnalyser(object):
 
     @staticmethod
     def get_shamean(file_obj):
-        return subprocess.check_output([BaseAnalyser.SHAMEAN_BIN, file_obj.path]).strip()
+        return subprocess.check_output(
+            [BaseAnalyser.SHAMEAN_BIN, file_obj.path]).strip()
 
     @staticmethod
     def get_checksums(file_obj):

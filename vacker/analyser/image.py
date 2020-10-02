@@ -9,6 +9,7 @@ from vacker.analyser.geolocation import GeolocationAnalyser
 
 class ImageAnalyser(GeolocationAnalyser):
 
+    THUMBNAIL_SIZE = (120, 120)
 
     @staticmethod
     def check_match(file_obj):
@@ -17,11 +18,22 @@ class ImageAnalyser(GeolocationAnalyser):
                 file_obj.__class__.__name__ not in ['ZippedFile', 'TarredFile'])
 
     @classmethod
+    def generate_thumbnail(cls, file_obj):
+        """Generate thumbnail for image."""
+        try:
+            pil_image = PIL.Image.open(file_obj.path)
+            pil_image.thumbnail(cls.THUMBNAIL_SIZE)
+            pil_image.save(file_obj.get_thumbnail_path(), "JPEG")
+        except (OSError, ValueError) as exc:
+            print('Failed to generate image thumbnail: ' + str(exc))
+            return
+
+    @classmethod
     def get_file_properties(cls, file_obj):
         try:
             pil_image = PIL.Image.open(file_obj.path)
         except (OSError, ValueError) as exc:
-            print(str(exc))
+            print('Failed to open pil image: ' + str(exc))
             return
 
         file_obj.properties['pv_date_taken'] = None
