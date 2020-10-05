@@ -12,7 +12,11 @@ class FfprobeAnalyser(BaseAnalyser):
     @staticmethod
     def _get_ffprobe_data(file_obj):
         try:
-            cmd = ['ffprobe', file_obj.path, '-print_format', 'json', '-show_format', '-show_streams']
+            cmd = [
+                'ffprobe', file_obj.path,
+                '-print_format', 'json',
+                '-show_format', '-show_streams'
+            ]
             res = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
             res.wait()
             stdout, stderr = res.communicate()
